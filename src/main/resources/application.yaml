@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: recipe
+
+  datasource:
+    url: ${LOCAL_DB_URL}
+    username: ${LOCAL_DB_USERNAME}
+    password: ${LOCAL_DB_PASSWORD}
+
