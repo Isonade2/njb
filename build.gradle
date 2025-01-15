@@ -35,6 +35,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	// .env에 정보를 application.yaml로 자동 패치해주는 의존성
+	implementation 'io.github.cdimascio:dotenv-java:2.2.0'
 }
 
 tasks.named('test') {
