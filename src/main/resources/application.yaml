@@ -1,19 +1,30 @@
 spring:
   application:
-    name: recipe
+    name: recipeㅅ
+
+
+  sql:
+    init:
+      mode: always
 
   datasource:
-    url: ${LOCAL_DB_URL}
-    driver-class-name: org.h2.Driver
-    username: ${LOCAL_DB_USERNAME}
-    password: ${LOCAL_DB_PASSWORD}
-  h2:
-    console:
-      enabled: true
+    url: ${DB_URL:jdbc:mariadb://localhost:3307/oauth2}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: org.mariadb.jdbc.Driver
+
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: create-drop
+
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+        show_sql: true
+        format_sql: true
+    defer-datasource-initialization: true
+
+logging:
+  level:
+    org:
+      springframework:
+        security: TRACE
