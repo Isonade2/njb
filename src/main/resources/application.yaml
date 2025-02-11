@@ -1,16 +1,19 @@
 spring:
   application:
-    name: recipeㅅ
-
+    name: recipe
 
   sql:
     init:
       mode: always
 
+  # .env import
+  config:
+    import: optional:file:.env[.properties]
+
   datasource:
-    url: ${DB_URL:jdbc:mariadb://localhost:3307/oauth2}
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root}
+    url: ${LOCAL_DB_URL}
+    username: ${LOCAL_DB_USERNAME}
+    password: ${LOCAL_DB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
 
   jpa:
