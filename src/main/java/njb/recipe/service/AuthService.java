@@ -1,5 +1,6 @@
 package njb.recipe.service;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import njb.recipe.dto.member.MemberRequestDTO;
 import njb.recipe.dto.member.MemberResponseDTO;
@@ -43,7 +44,11 @@ public class AuthService {
 
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
 
-        TokenDTO tokenDTO = tokenProvider.generateAccessTokenAndRefreshToken(authenticate.getName(), ua);
+        Long id = memberRepository.findByEmail(authenticate.getName())
+                .orElseThrow(() -> new RuntimeException("가입되지 않은 유저입니다.")).getId();
+
+
+        TokenDTO tokenDTO = tokenProvider.generateAccessTokenAndRefreshToken(id, ua);
 
         return tokenDTO;
     }
@@ -56,16 +61,16 @@ public class AuthService {
         }
 
         // 2. Access Token 에서 Member Email 가져오기
-        String email = tokenProvider.getEmail(tokenRequestDTO.getAccessToken());
+        long memberId = Long.parseLong(tokenProvider.getID(tokenRequestDTO.getAccessToken()));
 
-        String accessToken = tokenProvider.generateAccessToken(email);
+        String accessToken = tokenProvider.generateAccessToken(memberId);
         // 4. Refresh Token 일치하는 지 검사
 
         // 5. 새로운 토큰 생성
 
         // 6. 저장소 정보 업데이트
 
-        String refreshToken = tokenProvider.updateRefreshToken(tokenRequestDTO.getRefreshToken());
+        String refreshToken = tokenProvider.updateRefreshToken(tokenRequestDTO.getRefreshToken(),memberId);
 
         return TokenDTO.builder()
                 .accessToken(accessToken)

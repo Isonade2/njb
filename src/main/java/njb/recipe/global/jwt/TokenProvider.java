@@ -3,6 +3,7 @@ package njb.recipe.global.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,20 +51,20 @@ public class TokenProvider {
     private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
     private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
     private static final String BEARER = "Bearer";
-    private static final String EMAIL = "email";
+    private static final String MEMBER_ID = "mid";
     private static final String ROLE = "role";
 
     /**
      * AccessToken 생성
      */
-    public String generateAccessToken(String email){
+    public String generateAccessToken(Long id){
         Date now = new Date();
 
         Date date = new Date(now.getTime() + accessTokenExpirationPeriod);
         return JWT.create()
                 .withSubject(ACCESS_TOKEN_SUBJECT) //JWT
                 .withExpiresAt(new Date(now.getTime()+ accessTokenExpirationPeriod))
-                .withClaim(EMAIL, email)
+                .withClaim(MEMBER_ID, id)
                 .withClaim("role", "ROLE_USER")
                 .sign(Algorithm.HMAC512(secretKey));
     }
@@ -72,17 +73,18 @@ public class TokenProvider {
      * RefreshToken 생성
      *
      */
-    public String generateRefreshToken(){
+    public String generateRefreshToken(Long id){
         Date now = new Date();
         return JWT.create()
                 .withSubject(REFRESH_TOKEN_SUBJECT)
                 .withExpiresAt(new Date(now.getTime()+ refreshTokenExpirationPeriod))
+                .withClaim(MEMBER_ID, id)
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
-    public TokenDTO generateAccessTokenAndRefreshToken(String email, String ua){
-        String accessToken = generateAccessToken(email);
-        String refreshToken = generateRefreshToken();
+    public TokenDTO generateAccessTokenAndRefreshToken(Long id, String ua){
+        String accessToken = generateAccessToken(id);
+        String refreshToken = generateRefreshToken(id);
 
 
 
@@ -96,7 +98,7 @@ public class TokenProvider {
 
         refreshTokenRepository.save(token);
 
-        memberRepository.findByEmail(email)
+        memberRepository.findById(id)
                 .ifPresent(member -> {
                     member.updateRefreshToken(token);
                 });
@@ -122,9 +124,9 @@ public class TokenProvider {
 
 
 
-    public String updateRefreshToken(String refreshToken){
+    public String updateRefreshToken(String refreshToken, Long id){
         log.info("refreshToken : {}", refreshToken);
-        String newRefreshToken = generateRefreshToken();
+        String newRefreshToken = generateRefreshToken(id);
 
         Optional<RefreshToken> findRefreshToken = refreshTokenRepository.findByValue(refreshToken);
         findRefreshToken.ifPresentOrElse(token -> {
@@ -146,7 +148,7 @@ public class TokenProvider {
     
 
 
-    public String getEmail(String accessToken){
+    public String getID(String accessToken){
         if(!validateToken(accessToken)){
             throw new JWTDecodeException("유효하지 않은 토큰입니다.");
         }
@@ -155,18 +157,19 @@ public class TokenProvider {
                 .build()
                 .verify(accessToken);
 
-        return token.getClaim(EMAIL).asString();
+        return token.getClaim(MEMBER_ID).toString();
 
 
     }
 
     public Authentication getAuthentication(String accessToken){
         DecodedJWT token = getDecodedJWT(accessToken);
-        String email = token.getClaim(EMAIL).asString();
+        //String memberId = token.getClaim(MEMBER_ID).asString();
+        String memberId = token.getClaim(MEMBER_ID).toString();
         token.getClaim(ROLE).asArray(String.class);
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(token.getClaim(ROLE).asString()));
 
-        UserDetails principal = new User(token.getClaim(EMAIL).asString(), "", authorities);
+        UserDetails principal = new CustomUserDetails(memberId, "","", authorities);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
