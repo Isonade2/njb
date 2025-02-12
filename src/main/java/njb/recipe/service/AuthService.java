@@ -4,10 +4,14 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import njb.recipe.dto.member.MemberRequestDTO;
 import njb.recipe.dto.member.MemberResponseDTO;
+import njb.recipe.dto.member.SignupRequestDTO;
 import njb.recipe.dto.token.TokenDTO;
 import njb.recipe.dto.token.TokenRequestDTO;
+import njb.recipe.entity.ActivationToken;
+import njb.recipe.entity.JoinType;
 import njb.recipe.entity.Member;
 import njb.recipe.global.jwt.TokenProvider;
+import njb.recipe.repository.ActivationTokenRepository;
 import njb.recipe.repository.MemberRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,12 +21,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
+    private final ActivationTokenRepository activationTokenRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
@@ -76,5 +83,27 @@ public class AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
+    }
+
+    public void registerUser(SignupRequestDTO signupRequestDTO) {
+        memberRepository.findByEmail(signupRequestDTO.getEmail())
+                .ifPresent(member -> {
+                    throw new IllegalArgumentException("이미 가입되어 있는 유저입니다.");
+                });
+
+        Member member = signupRequestDTO.toEntity(passwordEncoder);
+
+        String activationToken = UUID.randomUUID().toString();
+
+        ActivationToken token = ActivationToken.builder()
+                .token(activationToken)
+                .member(member)
+                .build();
+
+        activationTokenRepository.save(token);
+    }
+
+    public void activateUser(String token) {
+
     }
 }
