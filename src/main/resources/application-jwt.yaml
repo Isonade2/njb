@@ -1,0 +1,9 @@
+jwt:
+  secretKey: ${JWT_SECRET:BQoJ6/z42ej/XOX6t5+TugNR6RR4cgqscF3C/BKWTJI=}
+
+  access:
+    expiration: ${JWT_ACCESS_EXPIRATION:3600000}
+    header: Authorization
+  refresh:
+    expiration: ${JWT_REFRESH_EXPIRATION:1209600000}
+    header: Authorization-refresh
