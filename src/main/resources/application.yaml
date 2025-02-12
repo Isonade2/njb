@@ -2,18 +2,33 @@ spring:
   application:
     name: recipe
 
+  sql:
+    init:
+      mode: always
+
+
+  # .env import
+  config:
+    import: optional:file:.env[.properties], classpath:application-jwt.yaml
+
   datasource:
     url: ${LOCAL_DB_URL}
-    driver-class-name: org.h2.Driver
     username: ${LOCAL_DB_USERNAME}
     password: ${LOCAL_DB_PASSWORD}
-  h2:
-    console:
-      enabled: true
+    driver-class-name: org.mariadb.jdbc.Driver
+
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: create-drop
+
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+        show_sql: true
+        format_sql: true
+    defer-datasource-initialization: true
+
+logging:
+  level:
+    org:
+      springframework:
+        security: TRACE
