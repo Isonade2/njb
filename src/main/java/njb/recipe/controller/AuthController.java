@@ -5,16 +5,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import njb.recipe.dto.ApiResponseDTO;
+import njb.recipe.dto.ResponseUtils;
 import njb.recipe.dto.member.MemberRequestDTO;
 import njb.recipe.dto.member.MemberResponseDTO;
+import njb.recipe.dto.member.SignupRequestDTO;
 import njb.recipe.dto.token.TokenDTO;
 import njb.recipe.dto.token.TokenRequestDTO;
 import njb.recipe.service.AuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,6 +22,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
+
+    @PostMapping("/signup1")
+    public ResponseEntity<ApiResponseDTO<?>> signup1(@RequestBody SignupRequestDTO signupRequestDTO){
+        authService.registerUser(signupRequestDTO);
+
+        ApiResponseDTO<Object> response = ResponseUtils.success("회원가입 성공");
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/activate")
+    public ResponseEntity<ApiResponseDTO<?>> activate(@RequestParam String token){
+        authService.activateUser(token);
+    }
+
 
     @PostMapping("/signup")
     public ResponseEntity<MemberResponseDTO> signup(@RequestBody MemberRequestDTO memberRequestDTO){

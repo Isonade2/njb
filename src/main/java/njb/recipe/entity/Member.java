@@ -30,8 +30,11 @@ public class Member {
     @Column(name = "nickname", length = 50)
     private String nickname;
 
-    @Column(name = "activated")
-    private boolean activated;
+    @Enumerated(EnumType.STRING)
+    private JoinType joinType;
+
+    @Column(nullable = false)
+    private boolean activated = false;
 
     @ManyToMany
     @JoinTable(
