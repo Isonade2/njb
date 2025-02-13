@@ -15,27 +15,33 @@ public class RefrigeratorService {
     private RefrigeratorRepository refrigeratorRepository;
 
     // 냉장고 생성
-    // public Refrigerator createRefrigerator(Refrigerator refrigerator, Long memberId) {
-    //     refrigerator.setMember(new Member(memberId)); // memberId를 사용하여 Member 객체 설정
-    //     return refrigeratorRepository.save(refrigerator);
-    // }
+    public Refrigerator createRefrigerator(Refrigerator refrigerator) {
+        return refrigeratorRepository.save(refrigerator); // 냉장고 저장
+    }
 
     // 냉장고 조회
+    public Optional<Refrigerator> getRefrigeratorById(Long id, Long memberId) {
+        Optional<Refrigerator> refrigerator = refrigeratorRepository.findById(id);
+        return refrigerator.filter(r -> r.getMember().getId().equals(memberId)); // 소유자 확인
+    }
+
+    // 냉장고 목록 조회
     public List<Refrigerator> getRefrigeratorsByMemberId(Long memberId) {
         return refrigeratorRepository.findByMemberId(memberId); // memberId로 냉장고 목록 조회
     }
 
     // 냉장고 수정
-    public Optional<Refrigerator> updateRefrigerator(Long id, Refrigerator updatedRefrigerator, Long memberId) {
+    public boolean updateRefrigerator(Long id, Refrigerator updatedRefrigerator, Long memberId) {
         Optional<Refrigerator> optionalRefrigerator = refrigeratorRepository.findById(id);
         if (optionalRefrigerator.isPresent() && optionalRefrigerator.get().getMember().getId().equals(memberId)) {
             Refrigerator refrigerator = optionalRefrigerator.get();
             refrigerator.setName(updatedRefrigerator.getName());
             refrigerator.setPhotoUrl(updatedRefrigerator.getPhotoUrl());
             refrigerator.setDescription(updatedRefrigerator.getDescription());
-            return Optional.of(refrigeratorRepository.save(refrigerator));
+            refrigeratorRepository.save(refrigerator);
+            return true; // 수정 성공
         }
-        return Optional.empty(); // 냉장고가 없거나 소유자가 다를 경우
+        return false; // 냉장고가 없거나 소유자가 다를 경우
     }
 
     // 냉장고 삭제
