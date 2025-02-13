@@ -45,6 +45,7 @@ public class AuthService {
                 });
 
         Member member = memberRequestDTO.toEntity(passwordEncoder);
+        member.activate();
         return MemberResponseDTO.of(memberRepository.save(member));
 
     }
