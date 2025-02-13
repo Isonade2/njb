@@ -49,7 +49,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/api/hello","/auth/**").permitAll()
+                        .requestMatchers("/api/hello","/auth/**", "/refri/**").permitAll()
                         .requestMatchers("/favicon.ico","/error").permitAll()
                         .requestMatchers("/").permitAll()
                                 .anyRequest().authenticated());

@@ -47,7 +47,9 @@ public class Member {
     @JoinColumn(name = "member_id")
     private List<RefreshToken> refreshToken;
 
-
+    public Member(Long id) {
+        this.id = id; //Long타입 생성자 추가
+    }
 
     public void updateRefreshToken(RefreshToken token){
         this.refreshToken.add(token);
