@@ -21,6 +21,7 @@ public class MemberRequestDTO {
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .nickname(nickname)
+                .activated(true)
                 .build();
     }
 }

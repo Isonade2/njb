@@ -21,7 +21,7 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    @Column(name = "membername", length = 50, unique = true)
+    @Column(name = "email", length = 50, unique = true, nullable = false)
     private String email;
 
     @Column(name = "password", length = 100)
@@ -51,5 +51,9 @@ public class Member {
 
     public void updateRefreshToken(RefreshToken token){
         this.refreshToken.add(token);
+    }
+
+    public void activate(){
+        this.activated = true;
     }
 }

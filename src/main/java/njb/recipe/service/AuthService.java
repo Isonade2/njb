@@ -13,6 +13,7 @@ import njb.recipe.entity.Member;
 import njb.recipe.global.jwt.TokenProvider;
 import njb.recipe.repository.ActivationTokenRepository;
 import njb.recipe.repository.MemberRepository;
+import org.springframework.cglib.core.Local;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -33,6 +35,8 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
+    private final EmailService emailService;
+
 
     public MemberResponseDTO signup(MemberRequestDTO memberRequestDTO){
         memberRepository.findByEmail(memberRequestDTO.getEmail())
@@ -97,13 +101,30 @@ public class AuthService {
 
         ActivationToken token = ActivationToken.builder()
                 .token(activationToken)
+                .createdAt(LocalDateTime.now())
+                .expiredAt(LocalDateTime.now().plusMinutes(30))
                 .member(member)
                 .build();
 
         activationTokenRepository.save(token);
+
+        emailService.sendEmail(signupRequestDTO.getEmail(),activationToken);
     }
 
-    public void activateUser(String token) {
+    public void activateUser(String value) {
+        ActivationToken token = activationTokenRepository.findByToken(value)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 토큰입니다."));
+
+        if(token.getExpiredAt().isBefore(LocalDateTime.now())){
+            throw new IllegalArgumentException("만료된 토큰입니다.");
+        }
+
+        token.getMember().activate();
+        memberRepository.save(token.getMember());
+
+
+        activationTokenRepository.delete(token);
+
 
     }
 }
