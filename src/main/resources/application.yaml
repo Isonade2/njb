@@ -4,11 +4,7 @@ spring:
 
   sql:
     init:
-<<<<<<< HEAD
       mode: never
-=======
-      mode: always
->>>>>>> b347ce9351822b33baf063adc8f5be0dd3a6cde3
 
   # .env import
   config:
@@ -50,5 +46,3 @@ logging:
 
 app:
   domain: ${APP_DOMAIN:http://localhost:8080}
-
-
