@@ -3,6 +3,7 @@ package njb.recipe.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import njb.recipe.dto.ApiResponseDTO;
@@ -14,6 +15,7 @@ import njb.recipe.dto.token.TokenDTO;
 import njb.recipe.dto.token.TokenRequestDTO;
 import njb.recipe.service.AuthService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,7 +26,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup1")
-    public ResponseEntity<ApiResponseDTO<?>> signup1(@RequestBody SignupRequestDTO signupRequestDTO){
+    public ResponseEntity<ApiResponseDTO<?>> signup1(@Validated @RequestBody SignupRequestDTO signupRequestDTO){
         authService.registerUser(signupRequestDTO);
 
         ApiResponseDTO<Object> response = ResponseUtils.success("회원가입 성공");
@@ -35,6 +37,7 @@ public class AuthController {
     @GetMapping("/activate")
     public ResponseEntity<ApiResponseDTO<?>> activate(@RequestParam String token){
         authService.activateUser(token);
+        return ResponseEntity.ok(ResponseUtils.success("계정 활성화 성공"));
     }
 
 

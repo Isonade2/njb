@@ -6,7 +6,6 @@ spring:
     init:
       mode: always
 
-
   # .env import
   config:
     import: optional:file:.env[.properties], classpath:application-jwt.yaml
@@ -19,7 +18,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
 
     properties:
       hibernate:
@@ -27,8 +26,25 @@ spring:
         format_sql: true
     defer-datasource-initialization: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp.debug: true
+      mail.smtp.connectiontimeout: 1000
+      mail.smtp.starttls.required: true
+      #mail.starttls.enable: true
+      mail.smtp.auth: true
+
 logging:
   level:
     org:
       springframework:
         security: TRACE
+
+app:
+  domain: ${APP_DOMAIN:http://localhost:8080}
+
+
