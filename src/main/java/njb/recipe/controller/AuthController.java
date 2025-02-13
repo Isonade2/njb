@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     private final AuthService authService;
 
-    @PostMapping("/signup1")
-    public ResponseEntity<ApiResponseDTO<?>> signup1(@Validated @RequestBody SignupRequestDTO signupRequestDTO){
+    @PostMapping("/signup")
+    public ResponseEntity<ApiResponseDTO<?>> signup(@Validated @RequestBody SignupRequestDTO signupRequestDTO){
         authService.registerUser(signupRequestDTO);
 
         ApiResponseDTO<Object> response = ResponseUtils.success("회원가입 성공");
@@ -41,8 +41,8 @@ public class AuthController {
     }
 
 
-    @PostMapping("/signup")
-    public ResponseEntity<MemberResponseDTO> signup(@RequestBody MemberRequestDTO memberRequestDTO){
+    @PostMapping("/signup1")
+    public ResponseEntity<MemberResponseDTO> signup1(@RequestBody MemberRequestDTO memberRequestDTO){
         return ResponseEntity.ok(authService.signup(memberRequestDTO));
     }
 
