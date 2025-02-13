@@ -14,6 +14,7 @@ import njb.recipe.dto.member.SignupRequestDTO;
 import njb.recipe.dto.token.TokenDTO;
 import njb.recipe.dto.token.TokenRequestDTO;
 import njb.recipe.service.AuthService;
+import org.antlr.v4.runtime.Token;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -47,19 +48,21 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDTO> login(@RequestBody MemberRequestDTO memberRequestDTO, HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<ApiResponseDTO<TokenDTO>> login(@RequestBody MemberRequestDTO memberRequestDTO, HttpServletRequest request, HttpServletResponse response){
         String ua = request.getHeader("User-Agent");
 
         TokenDTO tokenDTO = authService.login(memberRequestDTO, ua);
         addCookiesToResponse(tokenDTO, response);
 
-        return ResponseEntity.ok(tokenDTO);
+
+        ApiResponseDTO<TokenDTO> responseDTO = ResponseUtils.success(tokenDTO, "로그인 성공");
+        return ResponseEntity.ok(responseDTO);
     }
 
 
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenDTO> reissue(@RequestBody TokenRequestDTO tokenRequestDTO, HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<ApiResponseDTO<TokenDTO>> reissue(@RequestBody TokenRequestDTO tokenRequestDTO, HttpServletRequest request, HttpServletResponse response){
         String ua = request.getHeader("User-Agent");
 
 
@@ -68,7 +71,9 @@ public class AuthController {
         log.info("refresh token : {}", tokenDTO.getRefreshToken());
         addCookiesToResponse(tokenDTO, response);
 
-        return ResponseEntity.ok(tokenDTO);
+
+        ApiResponseDTO<TokenDTO> responseDTO = ResponseUtils.success(tokenDTO, "토큰 재발급 성공");
+        return ResponseEntity.ok(responseDTO);
     }
 
 

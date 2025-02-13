@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
                         FieldError::getDefaultMessage,
                         (a, b) -> a));
         log.error("MethodArgumentNotValidException", ex);
-        ApiResponseDTO<Map<String, String>> response = new ApiResponseDTO<>("fail", errors, "Validation errors occurred");
+        ApiResponseDTO<Map<String, String>> response = new ApiResponseDTO<>("fail", "Validation errors occurred",errors);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }
