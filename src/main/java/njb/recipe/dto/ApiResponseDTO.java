@@ -13,4 +13,5 @@ public class ApiResponseDTO<T> {
     private String message; // 응답 메시지
     private T data; // data는 제네릭으로 받는다. 실제 데이터
 
+
 }

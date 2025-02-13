@@ -3,18 +3,21 @@ package njb.recipe.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import njb.recipe.dto.ApiResponseDTO;
+import njb.recipe.dto.ResponseUtils;
 import njb.recipe.dto.member.MemberRequestDTO;
 import njb.recipe.dto.member.MemberResponseDTO;
+import njb.recipe.dto.member.SignupRequestDTO;
 import njb.recipe.dto.token.TokenDTO;
 import njb.recipe.dto.token.TokenRequestDTO;
 import njb.recipe.service.AuthService;
+import org.antlr.v4.runtime.Token;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,24 +27,42 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<MemberResponseDTO> signup(@RequestBody MemberRequestDTO memberRequestDTO){
+    public ResponseEntity<ApiResponseDTO<?>> signup(@Validated @RequestBody SignupRequestDTO signupRequestDTO){
+        authService.registerUser(signupRequestDTO);
+
+        ApiResponseDTO<Object> response = ResponseUtils.success("회원가입 성공");
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/activate")
+    public ResponseEntity<ApiResponseDTO<?>> activate(@RequestParam String token){
+        authService.activateUser(token);
+        return ResponseEntity.ok(ResponseUtils.success("계정 활성화 성공"));
+    }
+
+
+    @PostMapping("/signup1")
+    public ResponseEntity<MemberResponseDTO> signup1(@RequestBody MemberRequestDTO memberRequestDTO){
         return ResponseEntity.ok(authService.signup(memberRequestDTO));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDTO> login(@RequestBody MemberRequestDTO memberRequestDTO, HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<ApiResponseDTO<TokenDTO>> login(@RequestBody MemberRequestDTO memberRequestDTO, HttpServletRequest request, HttpServletResponse response){
         String ua = request.getHeader("User-Agent");
 
         TokenDTO tokenDTO = authService.login(memberRequestDTO, ua);
         addCookiesToResponse(tokenDTO, response);
 
-        return ResponseEntity.ok(tokenDTO);
+
+        ApiResponseDTO<TokenDTO> responseDTO = ResponseUtils.success(tokenDTO, "로그인 성공");
+        return ResponseEntity.ok(responseDTO);
     }
 
 
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenDTO> reissue(@RequestBody TokenRequestDTO tokenRequestDTO, HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<ApiResponseDTO<TokenDTO>> reissue(@RequestBody TokenRequestDTO tokenRequestDTO, HttpServletRequest request, HttpServletResponse response){
         String ua = request.getHeader("User-Agent");
 
 
@@ -50,7 +71,9 @@ public class AuthController {
         log.info("refresh token : {}", tokenDTO.getRefreshToken());
         addCookiesToResponse(tokenDTO, response);
 
-        return ResponseEntity.ok(tokenDTO);
+
+        ApiResponseDTO<TokenDTO> responseDTO = ResponseUtils.success(tokenDTO, "토큰 재발급 성공");
+        return ResponseEntity.ok(responseDTO);
     }
 
 
