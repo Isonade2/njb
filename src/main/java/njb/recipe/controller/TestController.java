@@ -27,4 +27,9 @@ public class TestController {
         log.info("userDetails: {}", userDetails);
         return ResponseEntity.ok("You are authenticated, "+"memberId: " +userDetails.getMemberId());
     }
+
+    @GetMapping("/health")
+    public ResponseEntity<String> health(){
+        return ResponseEntity.ok("server is running");
+    }
 }
