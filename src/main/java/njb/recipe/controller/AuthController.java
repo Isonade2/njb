@@ -85,15 +85,22 @@ public class AuthController {
         accessToken.setHttpOnly(true);
         //accessToken.setSecure(true);
         accessToken.setPath("/");
-        accessToken.setMaxAge(60 * 60 * 24); // 1일
+        accessToken.setDomain("nang.n-e.kr");
+
+        //accessToken.setMaxAge(60 * 60); // 1일
 
         refreshToken.setHttpOnly(true);
         //refreshToken.setSecure(true);
         refreshToken.setPath("/");
-        refreshToken.setMaxAge(60 * 60 * 24 * 14); // 14일
+        accessToken.setDomain("nang.n-e.kr");
+        //refreshToken.setMaxAge(60 * 60 * 24 * 14); // 14일
 
         response.addCookie(accessToken);
         response.addCookie(refreshToken);
+//        response.addHeader("Set-Cookie", String.format("accessToken=%s; Max-Age=%d; Path=/; Domain=nang.n-e.kr; HttpOnly; SameSite=Lax",
+//                tokenDTO.getAccessToken(), 60 * 60 * 24));
+//        response.addHeader("Set-Cookie", String.format("refreshToken=%s; Max-Age=%d; Path=/; Domain=nang.n-e.kr; HttpOnly; SameSite=Lax",
+//                tokenDTO.getRefreshToken(), 60 * 60 * 24 * 14));
     }
 
 }

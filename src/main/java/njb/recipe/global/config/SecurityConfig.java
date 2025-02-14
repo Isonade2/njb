@@ -49,7 +49,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/api/hello","/auth/**", "/refri/**").permitAll()
+                        .requestMatchers("/api/hello","/api/health","/auth/**", "/refri/**").permitAll()
                         .requestMatchers("/favicon.ico","/error").permitAll()
                         .requestMatchers("/").permitAll()
                                 .anyRequest().authenticated());
@@ -62,16 +62,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource(){
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // 허용할 origin 설정 (예: 로컬과 배포 환경 도메인)
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        // 특정 도메인만 허용 (CORS 오류 방지)
+        configuration.setAllowedOrigins(List.of("http://local.nang.n-e.kr:3000", "http://nang.n-e.kr"));
+
         // 허용할 HTTP 메소드 설정
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
         // 허용할 헤더 설정
         configuration.setAllowedHeaders(List.of("*"));
-        // 자격 증명(쿠키 등) 허용 여부
+
+        // 자격 증명(쿠키, Authorization 헤더 등) 허용
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
