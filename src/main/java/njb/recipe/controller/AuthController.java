@@ -13,8 +13,10 @@ import njb.recipe.dto.member.MemberResponseDTO;
 import njb.recipe.dto.member.SignupRequestDTO;
 import njb.recipe.dto.token.TokenDTO;
 import njb.recipe.dto.token.TokenRequestDTO;
+import njb.recipe.global.jwt.TokenProvider;
 import njb.recipe.service.AuthService;
 import org.antlr.v4.runtime.Token;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
+    private final TokenProvider tokenProvider;
+
+    @Value("${jwt.access.expiration_seconds}")
+    private Integer accessTokenExpirationSeconds;
+    @Value("${jwt.refresh.expiration_seconds}")
+    private Integer refreshTokenExpirationSeconds;
+    @Value("${jwt.domain}")
+    private String domain;
 
     @PostMapping("/signup")
     public ResponseEntity<ApiResponseDTO<?>> signup(@Validated @RequestBody SignupRequestDTO signupRequestDTO){
@@ -52,7 +62,9 @@ public class AuthController {
         String ua = request.getHeader("User-Agent");
 
         TokenDTO tokenDTO = authService.login(memberRequestDTO, ua);
-        addCookiesToResponse(tokenDTO, response);
+
+
+        addCookiesToResponse(tokenDTO, response, memberRequestDTO.getAutoLogin());
 
 
         ApiResponseDTO<TokenDTO> responseDTO = ResponseUtils.success(tokenDTO, "로그인 성공");
@@ -69,32 +81,57 @@ public class AuthController {
         TokenDTO tokenDTO = authService.reissue(tokenRequestDTO, ua);
 
         log.info("refresh token : {}", tokenDTO.getRefreshToken());
-        addCookiesToResponse(tokenDTO, response);
 
+
+        boolean autoLogin = tokenProvider.isAutoLogin(tokenDTO.getRefreshToken());
+        addCookiesToResponse(tokenDTO, response, autoLogin);
 
         ApiResponseDTO<TokenDTO> responseDTO = ResponseUtils.success(tokenDTO, "토큰 재발급 성공");
         return ResponseEntity.ok(responseDTO);
     }
 
 
+    private void addCookiesToResponse(TokenDTO tokenDTO, HttpServletResponse response, Boolean autoLogin) {
+        Cookie accessToken = new Cookie("accessToken", tokenDTO.getAccessToken());
+        Cookie refreshToken = new Cookie("refreshToken", tokenDTO.getRefreshToken());
+
+
+        //accessToken.setSecure(true); //HTTPS 설정
+        accessToken.setHttpOnly(true);
+        accessToken.setPath("/");
+        accessToken.setDomain(domain);
+        accessToken.setMaxAge(accessTokenExpirationSeconds); // 5분
+
+        //refreshToken.setSecure(true); // HTTPS 설정
+        refreshToken.setHttpOnly(true);
+        refreshToken.setPath("/");
+        refreshToken.setDomain(domain);
+        if(autoLogin != null && autoLogin){ // 자동 로그인이 체크 되었을 떄
+            refreshToken.setMaxAge(refreshTokenExpirationSeconds); // 14일
+        }
+        response.addCookie(accessToken);
+        response.addCookie(refreshToken);
+
+//        response.addHeader("Set-Cookie", String.format("accessToken=%s; Max-Age=%d; Path=/; Domain=nang.n-e.kr; HttpOnly; SameSite=Lax",
+//                tokenDTO.getAccessToken(), 60 * 60 * 24));
+//        response.addHeader("Set-Cookie", String.format("refreshToken=%s; Max-Age=%d; Path=/; Domain=nang.n-e.kr; HttpOnly; SameSite=Lax",
+//                tokenDTO.getRefreshToken(), 60 * 60 * 24 * 14));
+    }
 
     private void addCookiesToResponse(TokenDTO tokenDTO, HttpServletResponse response) {
         Cookie accessToken = new Cookie("accessToken", tokenDTO.getAccessToken());
         Cookie refreshToken = new Cookie("refreshToken", tokenDTO.getRefreshToken());
 
         accessToken.setHttpOnly(true);
-        //accessToken.setSecure(true);
+        //accessToken.setSecure(true); //HTTPS 설정
         accessToken.setPath("/");
         accessToken.setDomain("nang.n-e.kr");
-
-        //accessToken.setMaxAge(60 * 60); // 1일
+        //accessToken.setMaxAge(accessTokenExpirationSeconds); // 5분
 
         refreshToken.setHttpOnly(true);
-        //refreshToken.setSecure(true);
+        //refreshToken.setSecure(true); // HTTPS 설정
         refreshToken.setPath("/");
         accessToken.setDomain("nang.n-e.kr");
-        //refreshToken.setMaxAge(60 * 60 * 24 * 14); // 14일
-
         response.addCookie(accessToken);
         response.addCookie(refreshToken);
 //        response.addHeader("Set-Cookie", String.format("accessToken=%s; Max-Age=%d; Path=/; Domain=nang.n-e.kr; HttpOnly; SameSite=Lax",

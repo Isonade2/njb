@@ -4,7 +4,7 @@ spring:
 
   sql:
     init:
-      mode: never
+      mode: always
 
   # .env import
   config:
@@ -18,13 +18,13 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
 
     properties:
       hibernate:
         show_sql: true
         format_sql: true
-    defer-datasource-initialization: false
+    defer-datasource-initialization: true
 
   mail:
     host: smtp.gmail.com
