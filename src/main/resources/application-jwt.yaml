@@ -2,8 +2,12 @@ jwt:
   secretKey: ${JWT_SECRET:BQoJ6/z42ej/XOX6t5+TugNR6RR4cgqscF3C/BKWTJI=}
 
   access:
-    expiration: ${JWT_ACCESS_EXPIRATION:3600000}
+    expiration: ${JWT_ACCESS_EXPIRATION:300000}
+    expiration_seconds: ${JWT_ACCESS_EXPIRATION_SECONDS:300}
     header: Authorization
   refresh:
     expiration: ${JWT_REFRESH_EXPIRATION:1209600000}
+    expiration_seconds: ${JWT_REFRESH_EXPIRATION_SECONDS:1209600}
     header: Authorization-refresh
+
+  domain: ${DOMAIN:localhost}

@@ -82,9 +82,10 @@ public class TokenProvider {
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
-    public TokenDTO generateAccessTokenAndRefreshToken(Long id, String ua){
+    public TokenDTO generateAccessTokenAndRefreshToken(Long id, String ua, Boolean isAutoLogin){
         String accessToken = generateAccessToken(id);
         String refreshToken = generateRefreshToken(id);
+
 
 
 
@@ -94,7 +95,12 @@ public class TokenProvider {
                 .issuedAt(LocalDateTime.now())
                 .expiresAt(LocalDateTime.now().plusSeconds(refreshTokenExpirationPeriod/1000))
                 .deviceInfo(ua)
+                .autoLogin(isAutoLogin)
                 .build();
+
+        if(isAutoLogin){
+            token.updateAutoLogin(true);
+        }
 
         refreshTokenRepository.save(token);
 
@@ -177,6 +183,14 @@ public class TokenProvider {
         return JWT.require(Algorithm.HMAC512(secretKey))
                 .build()
                 .verify(token);
+    }
+
+    public boolean isAutoLogin(String refreshToken){
+        long id = Long.parseLong(getID(refreshToken));
+        RefreshToken token = refreshTokenRepository.findByValueAndMember_Id(refreshToken, id)
+                .orElseThrow(() -> new UsernameNotFoundException("일치하는 토큰이 없습니다."));
+
+        return token.getAutoLogin();
     }
 
 }

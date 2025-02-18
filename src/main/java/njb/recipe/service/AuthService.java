@@ -53,14 +53,14 @@ public class AuthService {
     public TokenDTO login(MemberRequestDTO memberRequestDTO, String ua){
         //1. Login ID/PW 기반으로 AuthenticationToken 생성
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberRequestDTO.getEmail(), memberRequestDTO.getPassword());
-
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+
 
         Long id = memberRepository.findByEmail(authenticate.getName())
                 .orElseThrow(() -> new RuntimeException("가입되지 않은 유저입니다.")).getId();
 
 
-        TokenDTO tokenDTO = tokenProvider.generateAccessTokenAndRefreshToken(id, ua);
+        TokenDTO tokenDTO = tokenProvider.generateAccessTokenAndRefreshToken(id, ua, memberRequestDTO.getAutoLogin());
 
         return tokenDTO;
     }
@@ -73,7 +73,7 @@ public class AuthService {
         }
 
         // 2. Access Token 에서 Member Email 가져오기
-        long memberId = Long.parseLong(tokenProvider.getID(tokenRequestDTO.getAccessToken()));
+        long memberId = Long.parseLong(tokenProvider.getID(tokenRequestDTO.getRefreshToken()));
 
         String accessToken = tokenProvider.generateAccessToken(memberId);
         // 4. Refresh Token 일치하는 지 검사
@@ -89,6 +89,7 @@ public class AuthService {
                 .refreshToken(refreshToken)
                 .build();
     }
+
 
     public void registerUser(SignupRequestDTO signupRequestDTO) {
         memberRepository.findByEmail(signupRequestDTO.getEmail())
@@ -127,5 +128,9 @@ public class AuthService {
         activationTokenRepository.delete(token);
 
 
+    }
+
+    public boolean isAutoLogin(String refreshToken){
+        return tokenProvider.isAutoLogin(refreshToken);
     }
 }
