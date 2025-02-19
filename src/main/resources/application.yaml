@@ -18,7 +18,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
 
     properties:
       hibernate:
@@ -29,8 +29,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    username: c1004sos2@gmail.com
+    password: nhbkflhbxdlnimhv
     properties:
       mail.smtp.debug: true
       mail.smtp.connectiontimeout: 1000
