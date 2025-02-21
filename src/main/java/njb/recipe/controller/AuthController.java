@@ -14,6 +14,7 @@ import njb.recipe.dto.member.SignupRequestDTO;
 import njb.recipe.dto.token.TokenDTO;
 import njb.recipe.dto.token.TokenRequestDTO;
 import njb.recipe.global.jwt.TokenProvider;
+import njb.recipe.handler.exception.DuplicateEmailException;
 import njb.recipe.service.AuthService;
 import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,13 +47,12 @@ public class AuthController {
         if(email != null && !email.isEmpty()){
             boolean checked = authService.checkEmail(email);
             if(checked){
-                return ResponseEntity.ok(ResponseUtils.success(!checked,"이미 사용중인 이메일"));
+                throw new DuplicateEmailException("이미 사용중인 이메일입니다.");
             }else{
                 return ResponseEntity.ok(ResponseUtils.success(!checked, "사용 가능 이메일"));
             }
-        }else{
-            return ResponseEntity.ok(ResponseUtils.fail("이메일을 입력해주세요"));
         }
+        return null;
     }
 
 
