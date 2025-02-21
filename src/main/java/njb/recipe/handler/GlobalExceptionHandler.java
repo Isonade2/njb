@@ -8,6 +8,7 @@ import njb.recipe.handler.exception.DuplicateEmailException;
 import org.apache.tomcat.util.http.ResponseUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -52,7 +53,7 @@ public class GlobalExceptionHandler {
 //        String defaultMessage = ex.getFieldError().getDefaultMessage();
         //ApiResponseDTO<Object> response = ResponseUtils.fail(defaultMessage);
 
-        return new ResponseEntity<>(fail("validation error"), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(fail("Validation Error"), HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -63,6 +64,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateEmailException.class)
     public ResponseEntity<ApiResponseDTO<?>> handleDuplicateEmailException(DuplicateEmailException ex){
         log.error("DuplicateEmailException", ex);
+        return new ResponseEntity<>(fail(ex.getMessage()),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<ApiResponseDTO<?>> handleUsernameNotFoundException(UsernameNotFoundException ex){
+        log.error("UsernameNotFoundException", ex);
         return new ResponseEntity<>(fail(ex.getMessage()),HttpStatus.BAD_REQUEST);
     }
 }

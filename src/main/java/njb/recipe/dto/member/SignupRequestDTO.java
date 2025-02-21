@@ -13,7 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Data
 public class SignupRequestDTO {
     @NotBlank
-    @Email()
+    @Email
+    @Size(max = 50)
     private String email;
     @NotBlank()
     @Size(min = 6, max = 20)

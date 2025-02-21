@@ -11,12 +11,11 @@ import njb.recipe.dto.ResponseUtils;
 import njb.recipe.dto.member.MemberRequestDTO;
 import njb.recipe.dto.member.MemberResponseDTO;
 import njb.recipe.dto.member.SignupRequestDTO;
-import njb.recipe.dto.token.TokenDTO;
+import njb.recipe.dto.token.TokenResponseDTO;
 import njb.recipe.dto.token.TokenRequestDTO;
 import njb.recipe.global.jwt.TokenProvider;
 import njb.recipe.handler.exception.DuplicateEmailException;
 import njb.recipe.service.AuthService;
-import org.antlr.v4.runtime.Token;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -78,42 +77,42 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponseDTO<TokenDTO>> login(@RequestBody MemberRequestDTO memberRequestDTO, HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<ApiResponseDTO<TokenResponseDTO>> login(@Valid @RequestBody MemberRequestDTO memberRequestDTO, HttpServletRequest request, HttpServletResponse response){
         String ua = request.getHeader("User-Agent");
 
-        TokenDTO tokenDTO = authService.login(memberRequestDTO, ua);
+        TokenResponseDTO tokenResponseDTO = authService.login(memberRequestDTO, ua);
 
 
-        addCookiesToResponse(tokenDTO, response, memberRequestDTO.getAutoLogin());
+        addCookiesToResponse(tokenResponseDTO, response, memberRequestDTO.getAutoLogin());
 
 
-        ApiResponseDTO<TokenDTO> responseDTO = ResponseUtils.success(tokenDTO, "로그인 성공");
+        ApiResponseDTO<TokenResponseDTO> responseDTO = ResponseUtils.success(tokenResponseDTO, "로그인 성공");
         return ResponseEntity.ok(responseDTO);
     }
 
 
 
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponseDTO<TokenDTO>> reissue(@RequestBody TokenRequestDTO tokenRequestDTO, HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<ApiResponseDTO<TokenResponseDTO>> reissue(@Valid @RequestBody TokenRequestDTO tokenRequestDTO, HttpServletRequest request, HttpServletResponse response){
         String ua = request.getHeader("User-Agent");
 
 
-        TokenDTO tokenDTO = authService.reissue(tokenRequestDTO, ua);
+        TokenResponseDTO tokenResponseDTO = authService.reissue(tokenRequestDTO, ua);
 
-        log.info("refresh token : {}", tokenDTO.getRefreshToken());
+        log.info("refresh token : {}", tokenResponseDTO.getRefreshToken());
 
 
-        boolean autoLogin = tokenProvider.isAutoLogin(tokenDTO.getRefreshToken());
-        addCookiesToResponse(tokenDTO, response, autoLogin);
+        boolean autoLogin = tokenProvider.isAutoLogin(tokenResponseDTO.getRefreshToken());
+        addCookiesToResponse(tokenResponseDTO, response, autoLogin);
 
-        ApiResponseDTO<TokenDTO> responseDTO = ResponseUtils.success(tokenDTO, "토큰 재발급 성공");
+        ApiResponseDTO<TokenResponseDTO> responseDTO = ResponseUtils.success(tokenResponseDTO, "토큰 재발급 성공");
         return ResponseEntity.ok(responseDTO);
     }
 
 
-    private void addCookiesToResponse(TokenDTO tokenDTO, HttpServletResponse response, Boolean autoLogin) {
-        Cookie accessToken = new Cookie("accessToken", tokenDTO.getAccessToken());
-        Cookie refreshToken = new Cookie("refreshToken", tokenDTO.getRefreshToken());
+    private void addCookiesToResponse(TokenResponseDTO tokenResponseDTO, HttpServletResponse response, Boolean autoLogin) {
+        Cookie accessToken = new Cookie("accessToken", tokenResponseDTO.getAccessToken());
+        Cookie refreshToken = new Cookie("refreshToken", tokenResponseDTO.getRefreshToken());
 
 
         //accessToken.setSecure(true); //HTTPS 설정
@@ -138,9 +137,9 @@ public class AuthController {
 //                tokenDTO.getRefreshToken(), 60 * 60 * 24 * 14));
     }
 
-    private void addCookiesToResponse(TokenDTO tokenDTO, HttpServletResponse response) {
-        Cookie accessToken = new Cookie("accessToken", tokenDTO.getAccessToken());
-        Cookie refreshToken = new Cookie("refreshToken", tokenDTO.getRefreshToken());
+    private void addCookiesToResponse(TokenResponseDTO tokenResponseDTO, HttpServletResponse response) {
+        Cookie accessToken = new Cookie("accessToken", tokenResponseDTO.getAccessToken());
+        Cookie refreshToken = new Cookie("refreshToken", tokenResponseDTO.getRefreshToken());
 
         accessToken.setHttpOnly(true);
         //accessToken.setSecure(true); //HTTPS 설정

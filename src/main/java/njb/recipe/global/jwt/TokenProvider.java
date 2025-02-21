@@ -3,11 +3,10 @@ package njb.recipe.global.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import njb.recipe.dto.token.TokenDTO;
+import njb.recipe.dto.token.TokenResponseDTO;
 import njb.recipe.entity.RefreshToken;
 import njb.recipe.repository.MemberRepository;
 import njb.recipe.repository.RefreshTokenRepository;
@@ -16,7 +15,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
@@ -82,7 +80,7 @@ public class TokenProvider {
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
-    public TokenDTO generateAccessTokenAndRefreshToken(Long id, String ua, Boolean isAutoLogin){
+    public TokenResponseDTO generateAccessTokenAndRefreshToken(Long id, String ua, Boolean isAutoLogin){
         String accessToken = generateAccessToken(id);
         String refreshToken = generateRefreshToken(id);
 
@@ -109,7 +107,7 @@ public class TokenProvider {
                     member.updateRefreshToken(token);
                 });
 
-        return TokenDTO.builder()
+        return TokenResponseDTO.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
