@@ -36,6 +36,26 @@ public class AuthController {
     @Value("${jwt.domain}")
     private String domain;
 
+
+    /**
+     * 이메일 중복 체크 API
+     * @param email
+     */
+    @GetMapping("/checkEmail")
+    public ResponseEntity<ApiResponseDTO<Boolean>> checkEmail(@RequestParam String email){
+        if(email != null && !email.isEmpty()){
+            boolean checked = authService.checkEmail(email);
+            if(checked){
+                return ResponseEntity.ok(ResponseUtils.success(!checked,"이미 사용중인 이메일"));
+            }else{
+                return ResponseEntity.ok(ResponseUtils.success(!checked, "사용 가능 이메일"));
+            }
+        }else{
+            return ResponseEntity.ok(ResponseUtils.fail("이메일을 입력해주세요"));
+        }
+    }
+
+
     @PostMapping("/signup")
     public ResponseEntity<ApiResponseDTO<?>> signup(@Validated @RequestBody SignupRequestDTO signupRequestDTO){
         authService.registerUser(signupRequestDTO);
