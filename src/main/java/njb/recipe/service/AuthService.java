@@ -11,6 +11,7 @@ import njb.recipe.entity.ActivationToken;
 import njb.recipe.entity.JoinType;
 import njb.recipe.entity.Member;
 import njb.recipe.global.jwt.TokenProvider;
+import njb.recipe.handler.exception.DuplicateEmailException;
 import njb.recipe.repository.ActivationTokenRepository;
 import njb.recipe.repository.MemberRepository;
 import org.springframework.cglib.core.Local;
@@ -94,7 +95,7 @@ public class AuthService {
     public void registerUser(SignupRequestDTO signupRequestDTO) {
         memberRepository.findByEmail(signupRequestDTO.getEmail())
                 .ifPresent(member -> {
-                    throw new IllegalArgumentException("이미 가입되어 있는 유저입니다.");
+                    throw new DuplicateEmailException("Duplicated Email.");
                 });
 
         Member member = signupRequestDTO.toEntity(passwordEncoder);
@@ -132,5 +133,9 @@ public class AuthService {
 
     public boolean isAutoLogin(String refreshToken){
         return tokenProvider.isAutoLogin(refreshToken);
+    }
+
+    public boolean checkEmail(String email) {
+        return memberRepository.findByEmail(email).isPresent();
     }
 }

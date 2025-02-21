@@ -13,10 +13,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Data
 public class SignupRequestDTO {
     @NotBlank
-    @Email
+    @Email()
     private String email;
-    @NotBlank
-    @Size(min = 6)
+    @NotBlank()
+    @Size(min = 6, max = 20)
     private String password;
     @NotNull(message = "닉네임을 입력해주세요.")
     private String nickname;
