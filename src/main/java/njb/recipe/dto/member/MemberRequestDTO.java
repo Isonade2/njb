@@ -8,12 +8,14 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import njb.recipe.entity.Member;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class MemberRequestDTO {
     @NotBlank
     @Email
