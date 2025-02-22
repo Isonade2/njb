@@ -33,6 +33,7 @@ dependencies {
 	implementation("com.github.ua-parser:uap-java:1.6.1")
 
 
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
@@ -43,6 +44,9 @@ dependencies {
 
 	// .env에 정보를 application.yaml로 자동 패치해주는 의존성
 	implementation 'io.github.cdimascio:dotenv-java:2.2.0'
+
+	// 메일 전송을 위한 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 tasks.named('test') {
