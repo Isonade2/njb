@@ -31,6 +31,8 @@ public class Refrigerator {
     @JoinColumn(name = "member_id", nullable = false) // 외래 키 컬럼 이름
     private Member member; // 이 냉장고의 소유자
 
-   
+    public Refrigerator(Long id) {
+        this.id = id;
+    }
 }
 

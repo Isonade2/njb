@@ -47,8 +47,19 @@ dependencies {
 
 	// 메일 전송을 위한 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	implementation 'jakarta.mail:jakarta.mail-api:2.0.1'
+	implementation 'com.sun.mail:jakarta.mail:2.0.1'
+
+	implementation 'javax.validation:validation-api:2.0.1.Final'
+	implementation 'org.hibernate.validator:hibernate-validator:6.1.5.Final'
+	implementation 'org.glassfish:javax.el:3.0.0'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile) {
+	options.compilerArgs << '-parameters'
 }
