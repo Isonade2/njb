@@ -1,5 +1,6 @@
 package njb.recipe.dto.refri;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
