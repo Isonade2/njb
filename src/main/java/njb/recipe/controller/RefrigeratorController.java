@@ -45,9 +45,9 @@ public class RefrigeratorController {
     }
 
     // 냉장고 조회
-    @GetMapping("/{id}")
+    @GetMapping("/{refrigeratorId}")
     public ResponseEntity<RefrigeratorResponseDTO> getRefrigeratorById(
-            @PathVariable Long id,
+            @PathVariable(name = "refrigeratorId") Long id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         String memberId = userDetails.getMemberId(); // JWT에서 member_id 추출
         Optional<Refrigerator> refrigerator = refrigeratorService.getRefrigeratorById(id, Long.parseLong(memberId));
@@ -82,9 +82,9 @@ public class RefrigeratorController {
     }
 
     //냉장고 수정
-    @PutMapping("/{id}")
+    @PutMapping("/{refrigeratorId}")
     public ResponseEntity<Void> updateRefrigerator(
-            @PathVariable Long id,
+            @PathVariable(name = "refrigeratorId") Long id,
             @RequestBody RefrigeratorDTO refrigeratorDTO,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         String memberId = userDetails.getMemberId(); // JWT에서 member_id 추출
@@ -100,9 +100,9 @@ public class RefrigeratorController {
     }
 
     // 냉장고 삭제
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{refrigeratorId}")
     public ResponseEntity<Void> deleteRefrigerator(
-            @PathVariable Long id,
+            @PathVariable(name = "refrigeratorId") Long id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         String memberId = userDetails.getMemberId(); // JWT에서 member_id 추출
         boolean isDeleted = refrigeratorService.deleteRefrigerator(id, Long.parseLong(memberId));
