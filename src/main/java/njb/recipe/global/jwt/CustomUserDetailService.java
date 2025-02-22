@@ -21,8 +21,11 @@ public class CustomUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(username).orElseThrow(() ->
-                new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username));
+                new UsernameNotFoundException("Invalid Email or Password"));
 
+        if(!member.isActivated()){
+            throw new RuntimeException("InActivated User");
+        }
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(member.getAuthorities().toString()));
 
         return new User(member.getEmail(), member.getPassword(), authorities);

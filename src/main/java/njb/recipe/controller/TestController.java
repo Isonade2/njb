@@ -25,6 +25,11 @@ public class TestController {
     @GetMapping("/auth-test")
     public ResponseEntity<String> authTest(@AuthenticationPrincipal CustomUserDetails userDetails){
         log.info("userDetails: {}", userDetails);
-        return ResponseEntity.ok("You are authenticated");
+        return ResponseEntity.ok("You are authenticated, "+"memberId: " +userDetails.getMemberId());
+    }
+
+    @GetMapping("/health")
+    public ResponseEntity<String> health(){
+        return ResponseEntity.ok("server is running");
     }
 }
