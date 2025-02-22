@@ -1,19 +1,17 @@
 package njb.recipe.service;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import njb.recipe.dto.member.MemberRequestDTO;
 import njb.recipe.dto.member.MemberResponseDTO;
 import njb.recipe.dto.member.SignupRequestDTO;
-import njb.recipe.dto.token.TokenDTO;
+import njb.recipe.dto.token.TokenResponseDTO;
 import njb.recipe.dto.token.TokenRequestDTO;
 import njb.recipe.entity.ActivationToken;
-import njb.recipe.entity.JoinType;
 import njb.recipe.entity.Member;
 import njb.recipe.global.jwt.TokenProvider;
+import njb.recipe.handler.exception.DuplicateEmailException;
 import njb.recipe.repository.ActivationTokenRepository;
 import njb.recipe.repository.MemberRepository;
-import org.springframework.cglib.core.Local;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -50,22 +48,22 @@ public class AuthService {
 
     }
 
-    public TokenDTO login(MemberRequestDTO memberRequestDTO, String ua){
+    public TokenResponseDTO login(MemberRequestDTO memberRequestDTO, String ua){
         //1. Login ID/PW 기반으로 AuthenticationToken 생성
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberRequestDTO.getEmail(), memberRequestDTO.getPassword());
-
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
+
 
         Long id = memberRepository.findByEmail(authenticate.getName())
                 .orElseThrow(() -> new RuntimeException("가입되지 않은 유저입니다.")).getId();
 
 
-        TokenDTO tokenDTO = tokenProvider.generateAccessTokenAndRefreshToken(id, ua);
+        TokenResponseDTO tokenResponseDTO = tokenProvider.generateAccessTokenAndRefreshToken(id, ua, memberRequestDTO.getAutoLogin());
 
-        return tokenDTO;
+        return tokenResponseDTO;
     }
 
-    public TokenDTO reissue(TokenRequestDTO tokenRequestDTO, String ua){
+    public TokenResponseDTO reissue(TokenRequestDTO tokenRequestDTO, String ua){
 
         // 1. Refresh Token 검증
         if(!tokenProvider.validateToken(tokenRequestDTO.getRefreshToken())){
@@ -73,7 +71,7 @@ public class AuthService {
         }
 
         // 2. Access Token 에서 Member Email 가져오기
-        long memberId = Long.parseLong(tokenProvider.getID(tokenRequestDTO.getAccessToken()));
+        long memberId = Long.parseLong(tokenProvider.getID(tokenRequestDTO.getRefreshToken()));
 
         String accessToken = tokenProvider.generateAccessToken(memberId);
         // 4. Refresh Token 일치하는 지 검사
@@ -84,16 +82,17 @@ public class AuthService {
 
         String refreshToken = tokenProvider.updateRefreshToken(tokenRequestDTO.getRefreshToken(),memberId);
 
-        return TokenDTO.builder()
+        return TokenResponseDTO.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
     }
 
+
     public void registerUser(SignupRequestDTO signupRequestDTO) {
         memberRepository.findByEmail(signupRequestDTO.getEmail())
                 .ifPresent(member -> {
-                    throw new IllegalArgumentException("이미 가입되어 있는 유저입니다.");
+                    throw new DuplicateEmailException("Duplicated Email.");
                 });
 
         Member member = signupRequestDTO.toEntity(passwordEncoder);
@@ -127,5 +126,13 @@ public class AuthService {
         activationTokenRepository.delete(token);
 
 
+    }
+
+    public boolean isAutoLogin(String refreshToken){
+        return tokenProvider.isAutoLogin(refreshToken);
+    }
+
+    public boolean checkEmail(String email) {
+        return memberRepository.findByEmail(email).isPresent();
     }
 }

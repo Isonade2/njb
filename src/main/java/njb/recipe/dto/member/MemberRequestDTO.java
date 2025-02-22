@@ -1,6 +1,10 @@
 package njb.recipe.dto.member;
 
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,9 +17,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberRequestDTO {
+    @NotBlank
+    @Email
+    @Size(max = 50)
     private String email;
+    @NotBlank
+    @Size(min = 6, max = 20)
     private String password;
     private String nickname;
+    @NotNull
+    private Boolean autoLogin = false;
 
 
     public Member toEntity(PasswordEncoder passwordEncoder) {
