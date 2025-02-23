@@ -4,7 +4,7 @@ spring:
 
   sql:
     init:
-      mode: always
+      mode: ${SQL_INIT_MODE:always}
 
   # .env import
   config:
@@ -16,15 +16,16 @@ spring:
     password: ${LOCAL_DB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
 
+
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: ${JPA_DDL_AUTO:update}
 
     properties:
       hibernate:
         show_sql: true
         format_sql: true
-    defer-datasource-initialization: true
+    defer-datasource-initialization: ${JPA_DDI:true}
 
   mail:
     host: smtp.gmail.com
