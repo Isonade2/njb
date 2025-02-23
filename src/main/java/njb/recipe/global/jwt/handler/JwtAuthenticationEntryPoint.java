@@ -21,9 +21,15 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setContentType("application/json;charset=utf-8");
 
         // 응답에 담을 메시지(필요한 만큼 확장 가능)
-        String json = String.format("{\"error\": \"%s\", \"message\": \"%s\"}",
-                "Unauthorized",
-                authException.getMessage()
+        /**
+         * {
+         *     "status": "fail",
+         *     "message": "오류 메시지",
+         * }
+         */
+        String json = String.format("{\"status\": \"%s\", \"message\": \"%s\"}",
+                "fail",
+                "Unauthorized: "+ authException.getMessage()
         );
 
         // 실제로 write

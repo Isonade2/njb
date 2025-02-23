@@ -63,3 +63,7 @@ tasks.named('test') {
 tasks.withType(JavaCompile) {
 	options.compilerArgs << '-parameters'
 }
+
+bootJar {
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
