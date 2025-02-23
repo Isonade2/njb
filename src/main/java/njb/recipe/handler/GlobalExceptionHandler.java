@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import njb.recipe.dto.ApiResponseDTO;
 import njb.recipe.dto.ResponseUtils;
 import njb.recipe.handler.exception.DuplicateEmailException;
+import njb.recipe.handler.exception.UserIdNotFountException;
 import org.apache.tomcat.util.http.ResponseUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,6 +71,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ApiResponseDTO<?>> handleUsernameNotFoundException(UsernameNotFoundException ex){
         log.error("UsernameNotFoundException", ex);
+        return new ResponseEntity<>(fail(ex.getMessage()),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserIdNotFountException.class)
+    public ResponseEntity<ApiResponseDTO<?>> handleUserIdNotFoundException(UserIdNotFountException ex){
+        log.error("UserIdNotFountException", ex);
         return new ResponseEntity<>(fail(ex.getMessage()),HttpStatus.BAD_REQUEST);
     }
 }
