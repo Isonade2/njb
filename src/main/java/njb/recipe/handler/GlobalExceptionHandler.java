@@ -1,22 +1,18 @@
 package njb.recipe.handler;
 
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import njb.recipe.dto.ApiResponseDTO;
-import njb.recipe.dto.ResponseUtils;
 import njb.recipe.handler.exception.DuplicateEmailException;
 import njb.recipe.handler.exception.UserIdNotFountException;
-import org.apache.tomcat.util.http.ResponseUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static njb.recipe.dto.ResponseUtils.*;
 
@@ -43,6 +39,23 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponseDTO<?>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
         log.error("MethodArgumentNotValidException", ex);
+//        Map<String, String> errors = ex.getBindingResult()
+//                .getFieldErrors()
+//                .stream()
+//                .collect(Collectors.toMap(
+//                        FieldError::getField,
+//                        FieldError::getDefaultMessage,
+//                        (a, b) -> a));
+
+//        String defaultMessage = ex.getFieldError().getDefaultMessage();
+        //ApiResponseDTO<Object> response = ResponseUtils.fail(defaultMessage);
+
+        return new ResponseEntity<>(fail("Validation Error"), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponseDTO<?>> handleConstraintViolationException(ConstraintViolationException ex){
+        log.error("ConstraintViolationException", ex);
 //        Map<String, String> errors = ex.getBindingResult()
 //                .getFieldErrors()
 //                .stream()
