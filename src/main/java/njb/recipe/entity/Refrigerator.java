@@ -15,10 +15,10 @@ public class Refrigerator {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "refrigerator_id")
+    @Column(name = "refrigerator_id", nullable = false)
     private Long id;
 
-    @Column(name = "refrigerator_name", length = 100)
+    @Column(name = "refrigerator_name", length = 100, nullable = false)
     private String name;
 
     @Column(name = "photo_url")

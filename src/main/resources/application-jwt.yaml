@@ -4,6 +4,8 @@ jwt:
   access:
     expiration: ${JWT_ACCESS_EXPIRATION:300000}
     expiration_seconds: ${JWT_ACCESS_EXPIRATION_SECONDS:300}
+    # expiration: ${JWT_ACCESS_EXPIRATION:86400000} # 하루 (밀리초)
+    # expiration_seconds: ${JWT_ACCESS_EXPIRATION_SECONDS:86400} # 하루 (초)
     header: Authorization
   refresh:
     expiration: ${JWT_REFRESH_EXPIRATION:1209600000}
