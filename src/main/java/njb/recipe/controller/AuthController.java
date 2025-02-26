@@ -4,6 +4,9 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import njb.recipe.dto.ApiResponseDTO;
@@ -14,7 +17,6 @@ import njb.recipe.dto.member.SignupRequestDTO;
 import njb.recipe.dto.token.TokenResponseDTO;
 import njb.recipe.dto.token.TokenRequestDTO;
 import njb.recipe.global.jwt.TokenProvider;
-import njb.recipe.handler.exception.DuplicateEmailException;
 import njb.recipe.service.AuthService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 @Slf4j
 @RequestMapping("/auth")
 public class AuthController {
@@ -42,16 +45,16 @@ public class AuthController {
      * @param email
      */
     @GetMapping("/checkEmail")
-    public ResponseEntity<ApiResponseDTO<Boolean>> checkEmail(@RequestParam String email){
-        if(email != null && !email.isEmpty()){
-            boolean checked = authService.checkEmail(email);
-            if(checked){
-                throw new DuplicateEmailException("이미 사용중인 이메일입니다.");
-            }else{
-                return ResponseEntity.ok(ResponseUtils.success(!checked, "사용 가능 이메일"));
-            }
+    public ResponseEntity<ApiResponseDTO<Boolean>> checkEmail(@RequestParam(required = false)
+                                                                  @NotBlank
+                                                                  @Email
+                                                                  String email){
+        boolean checked = authService.checkEmail(email);
+        if(checked){
+            return ResponseEntity.ok(ResponseUtils.success(!checked, "이미 사용중인 이메일"));
+        }else{
+            return ResponseEntity.ok(ResponseUtils.success(!checked, "사용 가능 이메일"));
         }
-        return null;
     }
 
 
