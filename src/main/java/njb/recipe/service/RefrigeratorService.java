@@ -42,14 +42,7 @@ public class RefrigeratorService {
         List<Refrigerator> refrigerators = refrigeratorRepository.findByMemberId(Long.parseLong(memberId)); // memberId로 냉장고 목록 조회
 
         // Refrigerator 엔티티를 DTO로 변환
-        return refrigerators.stream().map(r -> {
-            RefrigeratorResponseDTO responseDTO = new RefrigeratorResponseDTO();
-            responseDTO.setId(r.getId());
-            responseDTO.setName(r.getName());
-            responseDTO.setPhotoUrl(r.getPhotoUrl());
-            responseDTO.setDescription(r.getDescription());
-            return responseDTO;
-        }).collect(Collectors.toList());
+        return refrigerators.stream().map(this::convertToResponseDTO).collect(Collectors.toList());
     }
 
     // 냉장고 조회
@@ -59,15 +52,14 @@ public class RefrigeratorService {
                           .map(this::convertToResponseDTO); // 소유자 확인 후 DTO로 변환
     }
 
-
     // DTO 변환 메서드
     private RefrigeratorResponseDTO convertToResponseDTO(Refrigerator refrigerator) {
-        RefrigeratorResponseDTO responseDTO = new RefrigeratorResponseDTO();
-        responseDTO.setId(refrigerator.getId());
-        responseDTO.setName(refrigerator.getName());
-        responseDTO.setPhotoUrl(refrigerator.getPhotoUrl());
-        responseDTO.setDescription(refrigerator.getDescription());
-        return responseDTO;
+        return RefrigeratorResponseDTO.builder()
+                .id(refrigerator.getId())
+                .name(refrigerator.getName())
+                .photoUrl(refrigerator.getPhotoUrl())
+                .description(refrigerator.getDescription())
+                .build();
     }
 
     // 냉장고 수정
@@ -84,14 +76,13 @@ public class RefrigeratorService {
         return false; // 냉장고가 없거나 소유자가 다를 경우
     }
 
-
-   // 냉장고 삭제
-   public boolean deleteRefrigerator(Long id, Long memberId) {
-    Optional<Refrigerator> optionalRefrigerator = refrigeratorRepository.findById(id);
-    if (optionalRefrigerator.isPresent() && optionalRefrigerator.get().getMember().getId().equals(memberId)) {
-        refrigeratorRepository.deleteById(id);
-        return true; // 삭제 성공
+    // 냉장고 삭제
+    public boolean deleteRefrigerator(Long id, Long memberId) {
+        Optional<Refrigerator> optionalRefrigerator = refrigeratorRepository.findById(id);
+        if (optionalRefrigerator.isPresent() && optionalRefrigerator.get().getMember().getId().equals(memberId)) {
+            refrigeratorRepository.deleteById(id);
+            return true; // 삭제 성공
+        }
+        return false; // 냉장고가 없거나 소유자가 다를 경우
     }
-    return false; // 냉장고가 없거나 소유자가 다를 경우
-}
 }
