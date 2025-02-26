@@ -2,6 +2,8 @@ package njb.recipe.controller;
 
 import njb.recipe.dto.refri.RefrigeratorRequestDTO;
 import njb.recipe.dto.refri.RefrigeratorResponseDTO;
+import njb.recipe.dto.ApiResponseDTO;
+import njb.recipe.dto.ResponseUtils;
 import njb.recipe.entity.Member;
 import njb.recipe.entity.Refrigerator;
 import njb.recipe.global.jwt.CustomUserDetails;
@@ -24,61 +26,67 @@ public class RefrigeratorController {
 
     // 냉장고 생성
     @PostMapping
-    public ResponseEntity<Void> createRefrigerator(
+    public ResponseEntity<ApiResponseDTO<Void>> createRefrigerator(
             @RequestBody RefrigeratorRequestDTO refrigeratorDTO,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         
-        // 냉장고 생성 요청을 서비스에 위임
         refrigeratorService.createRefrigerator(refrigeratorDTO, userDetails.getMemberId());
-
-        // 201 Created 응답 반환
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ResponseUtils.success("냉장고가 성공적으로 생성되었습니다."));
     }
 
     // 냉장고 목록 조회
     @GetMapping
-    public ResponseEntity<List<RefrigeratorResponseDTO>> getRefrigeratorsByMemberId(
+    public ResponseEntity<ApiResponseDTO<List<RefrigeratorResponseDTO>>> getRefrigeratorsByMemberId(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         
-        // 사용자 ID로 냉장고 목록 조회 요청을 서비스에 위임
         List<RefrigeratorResponseDTO> responseDTOs = refrigeratorService.getRefrigeratorsByMemberId(userDetails.getMemberId());
-
-        return ResponseEntity.ok(responseDTOs);
+        return ResponseEntity.ok(ResponseUtils.success(responseDTOs, "냉장고 목록 조회 성공"));
     }
+
     // 냉장고 조회
     @GetMapping("/{refrigeratorId}")
-    public ResponseEntity<RefrigeratorResponseDTO> getRefrigeratorById(
+    public ResponseEntity<ApiResponseDTO<RefrigeratorResponseDTO>> getRefrigeratorById(
             @PathVariable(name = "refrigeratorId") Long id,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         
-        String memberId = userDetails.getMemberId(); // JWT에서 member_id 추출
+        String memberId = userDetails.getMemberId();
         Optional<RefrigeratorResponseDTO> responseDTO = refrigeratorService.getRefrigeratorById(id, Long.parseLong(memberId));
 
-        return responseDTO.map(ResponseEntity::ok)
-                          .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        return responseDTO.map(dto -> ResponseEntity.ok(ResponseUtils.success(dto, "냉장고 조회 성공")))
+                          .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                          .body(ResponseUtils.fail("냉장고를 찾을 수 없습니다.")));
     }
 
     // 냉장고 수정
     @PutMapping("/{refrigeratorId}")
-    public ResponseEntity<Void> updateRefrigerator(
+    public ResponseEntity<ApiResponseDTO<Void>> updateRefrigerator(
             @PathVariable(name = "refrigeratorId") Long id,
             @RequestBody RefrigeratorRequestDTO refrigeratorDTO,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         
-        String memberId = userDetails.getMemberId(); // JWT에서 member_id 추출
+        String memberId = userDetails.getMemberId();
         boolean isUpdated = refrigeratorService.updateRefrigerator(id, refrigeratorDTO, Long.parseLong(memberId));
 
-        return isUpdated ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return isUpdated ? ResponseEntity.ok(ResponseUtils.success("냉장고가 성공적으로 수정되었습니다."))
+                         : ResponseEntity.status(HttpStatus.NOT_FOUND)
+                         .body(ResponseUtils.fail("냉장고를 찾을 수 없습니다."));
     }
-   // 냉장고 삭제
-   @DeleteMapping("/{refrigeratorId}")
-   public ResponseEntity<Void> deleteRefrigerator(
-           @PathVariable(name = "refrigeratorId") Long id,
-           @AuthenticationPrincipal CustomUserDetails userDetails) {
-       
-       String memberId = userDetails.getMemberId(); // JWT에서 member_id 추출
-       boolean isDeleted = refrigeratorService.deleteRefrigerator(id, Long.parseLong(memberId));
 
-       return isDeleted ? ResponseEntity.noContent().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-   }
+    // 냉장고 삭제
+    @DeleteMapping("/{refrigeratorId}")
+    public ResponseEntity<ApiResponseDTO<Void>> deleteRefrigerator(
+            @PathVariable(name = "refrigeratorId") Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        
+        String memberId = userDetails.getMemberId();
+        boolean isDeleted = refrigeratorService.deleteRefrigerator(id, Long.parseLong(memberId));
+
+        if (isDeleted) {
+            return ResponseEntity.ok(ResponseUtils.success(null, "냉장고가 성공적으로 삭제되었습니다."));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ResponseUtils.fail("냉장고를 찾을 수 없습니다."));
+        }
+    }
 }
