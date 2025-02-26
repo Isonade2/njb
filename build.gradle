@@ -23,6 +23,10 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+	set('springAiVersion', "1.0.0-M6")
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -31,6 +35,9 @@ dependencies {
 
 	implementation 'com.auth0:java-jwt:4.5.0'
 	implementation("com.github.ua-parser:uap-java:1.6.1")
+
+	//AI 의존성
+	implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
 
 
 
@@ -48,11 +55,17 @@ dependencies {
 	// 메일 전송을 위한 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-	implementation 'jakarta.mail:jakarta.mail-api:2.0.1'
-	implementation 'com.sun.mail:jakarta.mail:2.0.1'
+	//implementation 'jakarta.mail:jakarta.mail-api:2.0.1'
+	//implementation 'com.sun.mail:jakarta.mail:2.0.1'
 
-	implementation 'org.hibernate.validator:hibernate-validator:6.1.5.Final'
-	implementation 'org.glassfish:javax.el:3.0.0'
+	//implementation 'javax.validation:validation-api:2.0.1.Final'
+	//implementation 'org.hibernate.validator:hibernate-validator:6.1.5.Final'
+	//implementation 'org.glassfish:javax.el:3.0.0'
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
+	}
 }
 
 tasks.named('test') {
