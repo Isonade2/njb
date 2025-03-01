@@ -2,14 +2,15 @@ jwt:
   secretKey: ${JWT_SECRET:BQoJ6/z42ej/XOX6t5+TugNR6RR4cgqscF3C/BKWTJI=}
 
   access:
-    expiration: ${JWT_ACCESS_EXPIRATION:300000}
-    expiration_seconds: ${JWT_ACCESS_EXPIRATION_SECONDS:300}
+    expiration: ${JWT_ACCESS_EXPIRATION:60000} # 1분 (밀리초)
+    expiration_seconds: ${JWT_ACCESS_EXPIRATION_SECONDS:60} # 1분 (초)
     # expiration: ${JWT_ACCESS_EXPIRATION:86400000} # 하루 (밀리초)
     # expiration_seconds: ${JWT_ACCESS_EXPIRATION_SECONDS:86400} # 하루 (초)
     header: Authorization
   refresh:
-    expiration: ${JWT_REFRESH_EXPIRATION:1209600000}
-    expiration_seconds: ${JWT_REFRESH_EXPIRATION_SECONDS:1209600}
+    expiration: ${JWT_REFRESH_EXPIRATION:1209600000} # 2주 (밀리초)
+    expiration_seconds: ${JWT_REFRESH_EXPIRATION_SECONDS:1209600} # 2주 (초)
     header: Authorization-refresh
 
   domain: ${DOMAIN:localhost}
+          

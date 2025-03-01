@@ -31,9 +31,11 @@ public class TokenProvider {
     @Value("${jwt.secretKey}")
     private String secretKey;
 
+    // 엑세스 토큰 유효시간
     @Value("${jwt.access.expiration}")
     private Long accessTokenExpirationPeriod;
 
+    // 리프레시 토큰 유효시간
     @Value("${jwt.refresh.expiration}")
     private Long refreshTokenExpirationPeriod;
 
