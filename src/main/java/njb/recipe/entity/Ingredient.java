@@ -23,6 +23,10 @@ public class Ingredient {
     private Long id; // 재료 ID
 
     @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false) // 외래 키 컬럼 이름
+    private Member member; // 재료의 소유자
+
+    @ManyToOne
     @JoinColumn(name = "refrigerator_id", nullable = false)
     private Refrigerator refrigerator; // 이 재료가 속한 냉장고
 
