@@ -4,8 +4,6 @@ import njb.recipe.dto.refri.RefrigeratorRequestDTO;
 import njb.recipe.dto.refri.RefrigeratorResponseDTO;
 import njb.recipe.dto.ApiResponseDTO;
 import njb.recipe.dto.ResponseUtils;
-import njb.recipe.entity.Member;
-import njb.recipe.entity.Refrigerator;
 import njb.recipe.global.jwt.CustomUserDetails;
 import njb.recipe.service.RefrigeratorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/refri")
+@RequestMapping("/refrigerators")
 public class RefrigeratorController {
 
     @Autowired
