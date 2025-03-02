@@ -13,8 +13,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class IngredientRequestDTO {
-    @NotNull(message = "Refrigerator ID is required.")
-    private Long refrigeratorId; // 냉장고 ID
     @NotNull(message = "Name is required.")
     private String name; // 재료 이름 (NOT NULL)
     private String photoUrl; // 재료 사진 URL (null 허용)
