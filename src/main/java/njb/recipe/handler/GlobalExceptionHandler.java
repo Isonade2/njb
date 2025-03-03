@@ -4,6 +4,7 @@ package njb.recipe.handler;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import njb.recipe.dto.ApiResponseDTO;
+import njb.recipe.handler.exception.ApiUsageExceedException;
 import njb.recipe.handler.exception.DuplicateEmailException;
 import njb.recipe.handler.exception.UserIdNotFountException;
 import org.springframework.http.HttpStatus;
@@ -90,6 +91,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserIdNotFountException.class)
     public ResponseEntity<ApiResponseDTO<?>> handleUserIdNotFoundException(UserIdNotFountException ex){
         log.error("UserIdNotFountException", ex);
+        return new ResponseEntity<>(fail(ex.getMessage()),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ApiUsageExceedException.class)
+    public ResponseEntity<ApiResponseDTO<?>> handleApiUsageExceedException(ApiUsageExceedException ex){
+        log.error("ApiUsageExceedException", ex);
         return new ResponseEntity<>(fail(ex.getMessage()),HttpStatus.BAD_REQUEST);
     }
 }
