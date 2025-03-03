@@ -1,5 +1,6 @@
 package njb.recipe.controller;
 
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +28,24 @@ public class AiController {
     private final AiService aiService;
     private final OpenAiChatModel chatModel;
 
-    @PostMapping("/ai-test")
-    public ResponseEntity<ApiResponseDTO<IngredientImageRecognitionDTO>> aiTest(@RequestParam("file") @NotNull MultipartFile file,
+
+    /**
+     * AI 단일 이미지 인식 API
+     * @param file
+     * @param userDetails
+     * @return
+     */
+    @PostMapping("/ingredients/image-recognition")
+    public ResponseEntity<ApiResponseDTO<IngredientImageRecognitionDTO>> imageRecognition(@RequestParam(required = false, name = "file") @NotNull MultipartFile file,
                                                                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-
+        if(file.isEmpty()){
+            throw new ConstraintViolationException("파일이 비어있습니다.", null);
+        }
+        String contentType = file.getContentType();
+        if(contentType == null || (!contentType.equals("image/png") && !contentType.equals("image/jpeg"))){
+            throw new ConstraintViolationException("이미지 파일이 아닙니다.", null);
+        }
 
         // AI API 호출 횟수 체크
         aiService.checkAiApiUsage(Long.parseLong(userDetails.getMemberId()));
