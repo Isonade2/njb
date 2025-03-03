@@ -4,6 +4,7 @@ package njb.recipe.handler;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import njb.recipe.dto.ApiResponseDTO;
+import njb.recipe.handler.exception.AiResponseError;
 import njb.recipe.handler.exception.ApiUsageExceedException;
 import njb.recipe.handler.exception.DuplicateEmailException;
 import njb.recipe.handler.exception.UserIdNotFountException;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 
 import static njb.recipe.dto.ResponseUtils.*;
@@ -97,6 +99,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApiUsageExceedException.class)
     public ResponseEntity<ApiResponseDTO<?>> handleApiUsageExceedException(ApiUsageExceedException ex){
         log.error("ApiUsageExceedException", ex);
+        return new ResponseEntity<>(fail(ex.getMessage()),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponseDTO<?>> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex){
+        log.error("MaxUploadSizeExceededException", ex);
+        return new ResponseEntity<>(fail("file size exceeds the limit(1MB)"),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AiResponseError.class)
+    public ResponseEntity<ApiResponseDTO<?>> handleAiResponseError(AiResponseError ex){
+        log.error("AiResponseError", ex);
         return new ResponseEntity<>(fail(ex.getMessage()),HttpStatus.BAD_REQUEST);
     }
 }
