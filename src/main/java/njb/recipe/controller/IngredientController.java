@@ -24,7 +24,7 @@ public class IngredientController {
     // 다중 재료 추가
     @PostMapping
     public ResponseEntity<ApiResponseDTO<List<IngredientResponseDTO>>> createIngredients(
-            @PathVariable Long refrigeratorId,
+            @PathVariable(name = "refrigeratorId") Long refrigeratorId,
             @RequestBody List<IngredientRequestDTO> ingredientRequestDTOs,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         String userId = userDetails.getMemberId();
@@ -62,8 +62,8 @@ public class IngredientController {
     // 단일 재료 수정
     @PutMapping("/{ingredientId}")
     public ResponseEntity<ApiResponseDTO<IngredientResponseDTO>> updateIngredient(
-            @PathVariable Long refrigeratorId,
-            @PathVariable Long ingredientId,
+            @PathVariable(name = "refrigeratorId") Long refrigeratorId,
+            @PathVariable(name = "ingredientId") Long ingredientId,
             @RequestBody IngredientRequestDTO ingredientRequestDTO,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         String userId = userDetails.getMemberId();
