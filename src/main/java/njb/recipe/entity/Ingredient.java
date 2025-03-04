@@ -23,7 +23,7 @@ public class Ingredient {
     private Long id; // 재료 ID
 
     @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false) // 외래 키 컬럼 이름
+    @JoinColumn(name = "member_id", nullable = false) 
     private Member member; // 재료의 소유자
 
     @ManyToOne

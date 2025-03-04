@@ -7,6 +7,7 @@ import njb.recipe.entity.Refrigerator;
 import njb.recipe.global.jwt.CustomUserDetails;
 import njb.recipe.repository.RefrigeratorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -38,8 +39,22 @@ public class RefrigeratorService {
     }
 
     // 냉장고 목록 조회
-    public List<RefrigeratorResponseDTO> getRefrigeratorsByMemberId(String memberId) {
-        List<Refrigerator> refrigerators = refrigeratorRepository.findByMemberId(Long.parseLong(memberId)); // memberId로 냉장고 목록 조회
+    public List<RefrigeratorResponseDTO> getRefrigeratorsByMemberId(String memberId, String sort, String direction) {
+        // 유효한 정렬 기준인지 확인
+        if (!"name".equals(sort) && !"createdAt".equals(sort)) {
+            sort = "name"; // 기본값 설정
+        }
+
+        // 유효한 정렬 방향인지 확인
+        Sort.Direction sortDirection;
+        try {
+            sortDirection = Sort.Direction.fromString(direction);
+        } catch (IllegalArgumentException e) {
+            sortDirection = Sort.Direction.ASC; // 기본값 설정
+        }
+
+        Sort sortOrder = Sort.by(sortDirection, sort); // 정렬 기준과 방향 설정
+        List<Refrigerator> refrigerators = refrigeratorRepository.findByMemberId(Long.parseLong(memberId), sortOrder);
 
         // Refrigerator 엔티티를 DTO로 변환
         return refrigerators.stream().map(this::convertToResponseDTO).collect(Collectors.toList());
