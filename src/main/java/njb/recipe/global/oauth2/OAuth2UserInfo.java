@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import njb.recipe.entity.JoinType;
 import njb.recipe.entity.Member;
 
 import java.util.Map;
@@ -18,6 +19,7 @@ public class OAuth2UserInfo {
     private String name;
     private String email;
     private String profile;
+    private JoinType joinType;
 
     /**
      * OAuth2UserInfo 클래스는 OAuth2 인증 공급자로부터 받은 사용자 정보를 담는 데이터 클래스입니다.
@@ -26,6 +28,7 @@ public class OAuth2UserInfo {
         return switch (registrationId) {
             case "google" -> ofGoogle(attributes);
             case "kakao" -> ofKakao(attributes);
+            case "naver" -> ofNaver(attributes);
             default -> {
                 try {
                     throw new AuthException("지원하지 않는 OAuth2 공급자입니다.");
@@ -46,6 +49,7 @@ public class OAuth2UserInfo {
                 .name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
                 .profile((String) attributes.get("picture"))
+                .joinType(JoinType.GOOGLE)
                 .build();
     }
 
@@ -64,10 +68,22 @@ public class OAuth2UserInfo {
                 .build();
     }
 
+    private static OAuth2UserInfo ofNaver(Map<String, Object> attributes) {
+        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
+        return OAuth2UserInfo.builder()
+                .name((String) response.get("name"))
+                .email((String) response.get("email"))
+                .profile((String) response.get("profile_image"))
+                .joinType(JoinType.NAVER)
+                .build();
+    }
+
     public Member toEntity() {
         return Member.builder()
                 .email(email)
                 .nickname(name)
+                .joinType(joinType)
+                .activated(true)
                 .build();
     }
 }
