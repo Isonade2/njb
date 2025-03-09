@@ -48,10 +48,10 @@ public class RefrigeratorController {
     @GetMapping
     public ResponseEntity<ApiResponseDTO<List<RefrigeratorResponseDTO>>> getRefrigeratorsByMemberId(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(name = "sort", required = false, defaultValue = "name") String sort,
-            @RequestParam(name = "direction", required = false, defaultValue = "asc") String direction) {
+            @RequestParam(name = "sortFileld", required = false, defaultValue = "name") String sortFileld,
+            @RequestParam(name = "sortOrder", required = false, defaultValue = "asc") String sortOrder) {
         
-        List<RefrigeratorResponseDTO> responseDTOs = refrigeratorService.getRefrigeratorsByMemberId(userDetails.getMemberId(), sort, direction);
+        List<RefrigeratorResponseDTO> responseDTOs = refrigeratorService.getRefrigeratorsByMemberId(userDetails.getMemberId(), sortFileld, sortOrder);
         return ResponseEntity.ok(ResponseUtils.success(responseDTOs, "냉장고 목록 조회 성공"));
     }
 
