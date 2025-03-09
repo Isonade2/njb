@@ -78,18 +78,25 @@ public class IngredientService {
     }
 
     // 다중 재료 삭제
-    public void deleteIngredients(List<Long> ingredientIds, String userId) {
+    public void deleteIngredients(List<Long> ingredientIds, String userId, Long refrigeratorId) {
+        // 모든 재료가 유효한지 확인
         for (Long id : ingredientIds) {
             Ingredient ingredient = ingredientRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("해당 재료가 존재하지 않습니다."));
 
             // 소유자 확인
-            if (!ingredient.getMember().getId().toString().equals(userId)) { // Long을 String으로 변환하여 비교
+            if (!ingredient.getMember().getId().toString().equals(userId)) {
                 throw new IllegalArgumentException("이 재료를 삭제할 권한이 없습니다.");
             }
 
-            ingredientRepository.deleteById(id);
+            // 냉장고 ID 확인
+            if (!ingredient.getRefrigerator().getId().equals(refrigeratorId)) {
+                throw new IllegalArgumentException("해당 냉장고에 속하지 않는 재료입니다.");
+            }
         }
+
+        // 모든 유효성 검사를 통과한 경우에만 삭제
+        ingredientRepository.deleteAllById(ingredientIds);
     }
 
     // 단일 재료 조회
