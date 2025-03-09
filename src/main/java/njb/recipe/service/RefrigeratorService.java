@@ -2,9 +2,11 @@ package njb.recipe.service;
 
 import njb.recipe.dto.refri.RefrigeratorRequestDTO;
 import njb.recipe.dto.refri.RefrigeratorResponseDTO;
+import njb.recipe.entity.Category;
 import njb.recipe.entity.Member;
 import njb.recipe.entity.Refrigerator;
 import njb.recipe.global.jwt.CustomUserDetails;
+import njb.recipe.repository.CategoryRepository;
 import njb.recipe.repository.RefrigeratorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -23,6 +25,14 @@ public class RefrigeratorService {
 
     @Autowired
     private RefrigeratorRepository refrigeratorRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+     // 모든 카테고리 조회
+     public List<Category> getAllCategories() {
+        return categoryRepository.findAll();
+    }
 
     // 냉장고 생성
     public void createRefrigerator(RefrigeratorRequestDTO refrigeratorDTO, String memberId) {

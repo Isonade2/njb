@@ -30,6 +30,10 @@ public class Ingredient {
     @JoinColumn(name = "refrigerator_id", nullable = false)
     private Refrigerator refrigerator; // 이 재료가 속한 냉장고
 
+    @ManyToOne 
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
     @Column(name = "ingredient_name", length = 100, nullable = false)
     private String name; // 재료 이름
 
@@ -39,8 +43,6 @@ public class Ingredient {
     @Column(name = "quantity", nullable = false)
     private int quantity; // 갯수
 
-    @Column(name = "category", nullable = false)
-    private String category; // 분류 (예: 육류, 채소 등)
 
     @CreationTimestamp
     @Column(name = "registration_date", updatable = false)

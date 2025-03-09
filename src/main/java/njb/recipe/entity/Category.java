@@ -21,6 +21,4 @@ public class Category {
     @Column(name = "category_name", length = 100, nullable = false, unique = true)
     private String name; // 카테고리 이름
 
-    @Column(name = "description")
-    private String description; // 카테고리 설명 (선택적)
 }

@@ -2,6 +2,7 @@ package njb.recipe.controller;
 
 import njb.recipe.dto.refri.RefrigeratorRequestDTO;
 import njb.recipe.dto.refri.RefrigeratorResponseDTO;
+import njb.recipe.entity.Category;
 import njb.recipe.dto.ApiResponseDTO;
 import njb.recipe.dto.ResponseUtils;
 import njb.recipe.global.jwt.CustomUserDetails;
@@ -15,12 +16,22 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+
 @RestController
 @RequestMapping("/refrigerators")
 public class RefrigeratorController {
 
     @Autowired
     private RefrigeratorService refrigeratorService;
+
+
+    //카테고리 리스트 조회 
+    @GetMapping("/categories")
+    public ResponseEntity<ApiResponseDTO<List<Category>>> getAllCategories () {
+        List<Category> categories = refrigeratorService.getAllCategories();
+        return ResponseEntity.ok(ResponseUtils.success(categories, "카테고리 목록 조회 성공"));
+    }
+    
 
     // 냉장고 생성
     @PostMapping
@@ -89,4 +100,5 @@ public class RefrigeratorController {
                     .body(ResponseUtils.fail("냉장고를 찾을 수 없습니다."));
         }
     }
+
 }
