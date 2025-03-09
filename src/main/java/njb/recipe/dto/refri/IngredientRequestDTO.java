@@ -18,8 +18,8 @@ public class IngredientRequestDTO {
     private String photoUrl; // 재료 사진 URL (null 허용)
     @NotNull(message = "Quantity is required.")
     private Integer quantity; // 갯수 (NOT NULL)
-    @NotNull(message = "Category is required.")
-    private String category; // 분류 (예: 육류, 채소 등) (NOT NULL)
     @NotNull(message = "Expiration date is required.")
     private LocalDate expirationDate; // 유통기한 (NOT NULL)
+    @NotNull(message = "Category is required.")
+    private Long categoryId;
 }
