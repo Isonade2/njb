@@ -8,11 +8,13 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final MemberRepository memberRepository;
 
@@ -39,10 +41,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private Member getOrSave(OAuth2UserInfo oAuth2UserInfo) {
-        return memberRepository.findByEmail(oAuth2UserInfo.getEmail())
-                .orElseGet(() -> memberRepository.save(Member.builder()
-                        .email(oAuth2UserInfo.getEmail())
-                        .nickname(oAuth2UserInfo.getName())
-                        .build()));
+        Member member = memberRepository.findByEmail(oAuth2UserInfo.getEmail())
+                .orElseGet(() -> oAuth2UserInfo.toEntity());
+        return memberRepository.save(member);
     }
 }

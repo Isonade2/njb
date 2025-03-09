@@ -41,6 +41,10 @@ public record PrincipalDetails(
         return member.getNickname();
     }
 
+    public Long getId() {
+        return member.getId();
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return UserDetails.super.isAccountNonExpired();
