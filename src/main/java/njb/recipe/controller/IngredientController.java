@@ -33,15 +33,17 @@ public class IngredientController {
                 .body(ResponseUtils.success(createdIngredients, "재료가 성공적으로 추가되었습니다."));
     }
 
-    // 재료 리스트 조회 (카테고리 선택적)
+    // 재료 리스트 조회 (카테고리 선택적, 정렬 추가)
     @GetMapping
     public ResponseEntity<ApiResponseDTO<List<IngredientResponseDTO>>> getIngredientsByRefrigeratorId(
             @PathVariable(name = "refrigeratorId") Long refrigeratorId,
-            @RequestParam(name = "category", required = false) String category,
+            @RequestParam(name = "categoryId", required = false) Long categoryId,
+            @RequestParam(name = "sortField", defaultValue = "name") String sortField,
+            @RequestParam(name = "sortOrder", defaultValue = "asc") String sortOrder,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         
         String userId = userDetails.getMemberId();
-        List<IngredientResponseDTO> ingredients = ingredientService.getIngredientsByRefrigeratorId(refrigeratorId, category, userId);
+        List<IngredientResponseDTO> ingredients = ingredientService.getIngredientsByRefrigeratorId(refrigeratorId, categoryId, sortField, sortOrder, userId);
         
         return ResponseEntity.ok(ResponseUtils.success(ingredients, "재료 목록 조회 성공"));
     }
@@ -74,10 +76,11 @@ public class IngredientController {
     // 다중 재료 삭제
     @DeleteMapping
     public ResponseEntity<ApiResponseDTO<Void>> deleteIngredients(
+            @PathVariable(name = "refrigeratorId") Long refrigeratorId,
             @RequestBody List<Long> ingredientIds,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         String userId = userDetails.getMemberId();
-        ingredientService.deleteIngredients(ingredientIds, userId);
+        ingredientService.deleteIngredients(ingredientIds, userId, refrigeratorId);
         return ResponseEntity.ok(ResponseUtils.success(null, "재료가 성공적으로 삭제되었습니다."));
     }
 }

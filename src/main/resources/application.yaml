@@ -23,8 +23,6 @@ spring:
         options:
           model: gpt-4o-mini
 
-
-
   jpa:
     hibernate:
       ddl-auto: ${JPA_DDL_AUTO:update}

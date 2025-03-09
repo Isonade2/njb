@@ -2,11 +2,14 @@ package njb.recipe.service;
 
 import njb.recipe.dto.refri.RefrigeratorRequestDTO;
 import njb.recipe.dto.refri.RefrigeratorResponseDTO;
+import njb.recipe.entity.Category;
 import njb.recipe.entity.Member;
 import njb.recipe.entity.Refrigerator;
 import njb.recipe.global.jwt.CustomUserDetails;
+import njb.recipe.repository.CategoryRepository;
 import njb.recipe.repository.RefrigeratorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,14 @@ public class RefrigeratorService {
     @Autowired
     private RefrigeratorRepository refrigeratorRepository;
 
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+     // 모든 카테고리 조회
+     public List<Category> getAllCategories() {
+        return categoryRepository.findAll();
+    }
+
     // 냉장고 생성
     public void createRefrigerator(RefrigeratorRequestDTO refrigeratorDTO, String memberId) {
         // DTO에서 값을 가져와서 Refrigerator 엔티티 생성
@@ -38,8 +49,22 @@ public class RefrigeratorService {
     }
 
     // 냉장고 목록 조회
-    public List<RefrigeratorResponseDTO> getRefrigeratorsByMemberId(String memberId) {
-        List<Refrigerator> refrigerators = refrigeratorRepository.findByMemberId(Long.parseLong(memberId)); // memberId로 냉장고 목록 조회
+    public List<RefrigeratorResponseDTO> getRefrigeratorsByMemberId(String memberId, String sort, String direction) {
+        // 유효한 정렬 기준인지 확인
+        if (!"name".equals(sort) && !"createdAt".equals(sort)) {
+            sort = "name"; // 기본값 설정
+        }
+
+        // 유효한 정렬 방향인지 확인
+        Sort.Direction sortDirection;
+        try {
+            sortDirection = Sort.Direction.fromString(direction);
+        } catch (IllegalArgumentException e) {
+            sortDirection = Sort.Direction.ASC; // 기본값 설정
+        }
+
+        Sort sortOrder = Sort.by(sortDirection, sort); // 정렬 기준과 방향 설정
+        List<Refrigerator> refrigerators = refrigeratorRepository.findByMemberId(Long.parseLong(memberId), sortOrder);
 
         // Refrigerator 엔티티를 DTO로 변환
         return refrigerators.stream().map(this::convertToResponseDTO).collect(Collectors.toList());
