@@ -93,6 +93,12 @@ public class AuthController {
         return ResponseEntity.ok(responseDTO);
     }
 
+//    @GetMapping("/success")
+//    public ResponseEntity<ApiResponseDTO<?>> success(HttpServletResponse response){
+//        ApiResponseDTO<?> responseDTO = ResponseUtils.success("로그인 성공");
+//        return ResponseEntity.ok(responseDTO);
+//    }
+
 
 
     @PostMapping("/refresh")
