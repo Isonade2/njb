@@ -32,6 +32,7 @@ public class SignupRequestDTO {
                 .nickname(nickname)
                 .joinType(JoinType.LOCAL)
                 .activated(false)
+                .role("ROLE_USER")
                 .build();
     }
 }
