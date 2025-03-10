@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import njb.recipe.controller.AuthController;
 import njb.recipe.dto.token.TokenResponseDTO;
+import njb.recipe.entity.Member;
 import njb.recipe.global.jwt.TokenProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,9 +41,10 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         log.info("OAuth2SuccessHandler.onAuthenticationSuccess");
         String ua = request.getHeader("User-Agent");
         PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Member member = principal.member();
         Long id = principal.getId();
         // accessToken, refreshToken 발급
-        TokenResponseDTO tokenResponseDTO = tokenProvider.generateAccessTokenAndRefreshToken(id, ua, false);
+        TokenResponseDTO tokenResponseDTO = tokenProvider.generateAccessTokenAndRefreshToken(member, ua, false);
 
         addCookiesToResponse(tokenResponseDTO, response, false);
 
