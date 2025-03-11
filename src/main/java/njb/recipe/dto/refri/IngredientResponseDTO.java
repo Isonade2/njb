@@ -18,7 +18,8 @@ public class IngredientResponseDTO {
     private String name; // 재료 이름
     private String photoUrl; // 재료 사진 URL
     private int quantity; // 갯수
-    private String category; // 카테고리 이름 
+    private String category; // 카테고리 이름
+    private Long categoryId; // 카테고리 ID
     private LocalDateTime registrationDate; // 등록 날짜
     private LocalDate expirationDate; // 유통기한
 }

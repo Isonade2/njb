@@ -72,6 +72,7 @@ public class IngredientService {
                 .photoUrl(updatedIngredient.getPhotoUrl())
                 .quantity(updatedIngredient.getQuantity())
                 .category(updatedIngredient.getCategory().getName()) // 카테고리 이름 반환
+                .categoryId(updatedIngredient.getCategory().getId()) // 카테고리 ID 반환
                 .registrationDate(updatedIngredient.getRegistrationDate())
                 .expirationDate(updatedIngredient.getExpirationDate())
                 .build();
@@ -129,6 +130,7 @@ public class IngredientService {
                 .photoUrl(ingredient.getPhotoUrl())
                 .quantity(ingredient.getQuantity())
                 .category(ingredient.getCategory().getName()) // 카테고리 이름 반환
+                .categoryId(ingredient.getCategory().getId()) // 카테고리 ID 반환
                 .registrationDate(ingredient.getRegistrationDate())
                 .expirationDate(ingredient.getExpirationDate())
                 .build();
@@ -173,6 +175,7 @@ public class IngredientService {
                         .photoUrl(ingredient.getPhotoUrl())
                         .quantity(ingredient.getQuantity())
                         .category(ingredient.getCategory().getName()) // 카테고리 이름 반환
+                        .categoryId(ingredient.getCategory().getId()) // 카테고리 ID 반환
                         .registrationDate(ingredient.getRegistrationDate())
                         .expirationDate(ingredient.getExpirationDate())
                         .build())
@@ -215,6 +218,7 @@ public class IngredientService {
                             .photoUrl(savedIngredient.getPhotoUrl())
                             .quantity(savedIngredient.getQuantity())
                             .category(savedIngredient.getCategory().getName())
+                            .categoryId(savedIngredient.getCategory().getId()) // 카테고리 ID 반환
                             .registrationDate(savedIngredient.getRegistrationDate())
                             .expirationDate(savedIngredient.getExpirationDate())
                             .build();
