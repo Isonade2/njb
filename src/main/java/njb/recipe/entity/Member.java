@@ -33,16 +33,22 @@ public class Member {
     @Column(nullable = false)
     private boolean activated = false;
 
-    @ManyToMany
-    @JoinTable(
-            name = "member_authority",
-            joinColumns = {@JoinColumn(name = "member_id", referencedColumnName = "member_id")},
-            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
-    private Set<Authority> authorities;
+//    @ManyToMany
+//    @JoinTable(
+//            name = "member_authority",
+//            joinColumns = {@JoinColumn(name = "member_id", referencedColumnName = "member_id")},
+//            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
+//    private Set<Authority> authorities;
+
+
+    private String role;
+
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "member_id")
     private List<RefreshToken> refreshToken;
+
+
 
     public Member(Long id) {
         this.id = id; //Long타입 생성자 추가

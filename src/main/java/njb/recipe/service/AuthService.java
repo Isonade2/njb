@@ -54,11 +54,11 @@ public class AuthService {
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);
 
 
-        Long id = memberRepository.findByEmail(authenticate.getName())
-                .orElseThrow(() -> new RuntimeException("가입되지 않은 유저입니다.")).getId();
+        Member member = memberRepository.findByEmail(authenticate.getName())
+                .orElseThrow(() -> new RuntimeException("가입되지 않은 유저입니다."));
 
 
-        TokenResponseDTO tokenResponseDTO = tokenProvider.generateAccessTokenAndRefreshToken(id, ua, memberRequestDTO.getAutoLogin());
+        TokenResponseDTO tokenResponseDTO = tokenProvider.generateAccessTokenAndRefreshToken(member, ua, memberRequestDTO.getAutoLogin());
 
         return tokenResponseDTO;
     }
@@ -72,8 +72,9 @@ public class AuthService {
 
         // 2. Access Token 에서 Member Email 가져오기
         long memberId = Long.parseLong(tokenProvider.getID(tokenRequestDTO.getRefreshToken()));
-
-        String accessToken = tokenProvider.generateAccessToken(memberId);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("가입되지 않은 유저입니다."));
+        String accessToken = tokenProvider.generateAccessToken(member);
         // 4. Refresh Token 일치하는 지 검사
 
         // 5. 새로운 토큰 생성

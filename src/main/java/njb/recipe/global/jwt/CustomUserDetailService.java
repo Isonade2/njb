@@ -24,9 +24,12 @@ public class CustomUserDetailService implements UserDetailsService {
                 new UsernameNotFoundException("Invalid Email or Password"));
 
         if(!member.isActivated()){
-            throw new RuntimeException("InActivated User");
+            throw new UsernameNotFoundException("InActivated User");
         }
-        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(member.getAuthorities().toString()));
+
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(member.getRole()));
+
+        //List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(member.getAuthorities().toString()));
 
         return new User(member.getEmail(), member.getPassword(), authorities);
     }

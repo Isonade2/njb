@@ -84,6 +84,7 @@ public class OAuth2UserInfo {
                 .nickname(name)
                 .joinType(joinType)
                 .activated(true)
+                .role("ROLE_USER")
                 .build();
     }
 }
