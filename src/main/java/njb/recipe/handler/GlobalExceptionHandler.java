@@ -1,21 +1,21 @@
 package njb.recipe.handler;
 
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import njb.recipe.dto.ApiResponseDTO;
-import njb.recipe.dto.ResponseUtils;
+import njb.recipe.handler.exception.AiResponseError;
+import njb.recipe.handler.exception.ApiUsageExceedException;
 import njb.recipe.handler.exception.DuplicateEmailException;
-import org.apache.tomcat.util.http.ResponseUtil;
+import njb.recipe.handler.exception.UserIdNotFountException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import static njb.recipe.dto.ResponseUtils.*;
 
@@ -56,6 +56,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(fail("Validation Error"), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiResponseDTO<?>> handleConstraintViolationException(ConstraintViolationException ex){
+        log.error("ConstraintViolationException", ex);
+//        Map<String, String> errors = ex.getBindingResult()
+//                .getFieldErrors()
+//                .stream()
+//                .collect(Collectors.toMap(
+//                        FieldError::getField,
+//                        FieldError::getDefaultMessage,
+//                        (a, b) -> a));
+
+//        String defaultMessage = ex.getFieldError().getDefaultMessage();
+        //ApiResponseDTO<Object> response = ResponseUtils.fail(defaultMessage);
+
+        return new ResponseEntity<>(fail("Validation Error"), HttpStatus.BAD_REQUEST);
+    }
+
     /**
      * 중복 이메일 예외 처리`
      * @param ex
@@ -70,6 +87,30 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ApiResponseDTO<?>> handleUsernameNotFoundException(UsernameNotFoundException ex){
         log.error("UsernameNotFoundException", ex);
+        return new ResponseEntity<>(fail(ex.getMessage()),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(UserIdNotFountException.class)
+    public ResponseEntity<ApiResponseDTO<?>> handleUserIdNotFoundException(UserIdNotFountException ex){
+        log.error("UserIdNotFountException", ex);
+        return new ResponseEntity<>(fail(ex.getMessage()),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ApiUsageExceedException.class)
+    public ResponseEntity<ApiResponseDTO<?>> handleApiUsageExceedException(ApiUsageExceedException ex){
+        log.error("ApiUsageExceedException", ex);
+        return new ResponseEntity<>(fail(ex.getMessage()),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiResponseDTO<?>> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException ex){
+        log.error("MaxUploadSizeExceededException", ex);
+        return new ResponseEntity<>(fail("file size exceeds the limit(1MB)"),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(AiResponseError.class)
+    public ResponseEntity<ApiResponseDTO<?>> handleAiResponseError(AiResponseError ex){
+        log.error("AiResponseError", ex);
         return new ResponseEntity<>(fail(ex.getMessage()),HttpStatus.BAD_REQUEST);
     }
 }
