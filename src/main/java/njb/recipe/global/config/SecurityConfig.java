@@ -2,11 +2,15 @@ package njb.recipe.global.config;
 
 
 import lombok.RequiredArgsConstructor;
+import njb.recipe.global.oauth2.CustomOAuth2UserService;
+import njb.recipe.global.oauth2.OAuth2FailureHandler;
+import njb.recipe.global.oauth2.OAuth2SuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -29,13 +33,18 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity(debug = true)
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final TokenProvider tokenProvider;
 
+    private final CustomOAuth2UserService oAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
+
     @Bean
-    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -49,11 +58,20 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((request) -> request
-                        .requestMatchers("/api/hello","/api/health","/auth/**", "/refri/**").permitAll()
+                        .requestMatchers("/api/**","/auth/**", "/login/oauth2/code/code/kakao").permitAll()
+                        //.requestMatchers("/api/**","/auth/**", "/refri/**").permitAll()
                         .requestMatchers("/favicon.ico","/error").permitAll()
                         .requestMatchers("/").permitAll()
-                                .anyRequest().authenticated());
+                                .anyRequest().authenticated())
                         //.anyRequest().authenticated());
+                .oauth2Login(oauth ->
+                        oauth.userInfoEndpoint(c -> c.userService(oAuth2UserService))
+                                .successHandler(oAuth2SuccessHandler)
+                                .failureHandler(new OAuth2FailureHandler())
+                );
+
+
+
 
         http.exceptionHandling(ehc -> ehc.accessDeniedHandler(new JwtAccessDeniedHandler()));
         http.exceptionHandling(ehc -> ehc.authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
