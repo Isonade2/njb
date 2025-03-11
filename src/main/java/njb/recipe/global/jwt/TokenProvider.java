@@ -7,6 +7,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import njb.recipe.dto.token.TokenResponseDTO;
+import njb.recipe.entity.Member;
 import njb.recipe.entity.RefreshToken;
 import njb.recipe.repository.MemberRepository;
 import njb.recipe.repository.RefreshTokenRepository;
@@ -57,15 +58,15 @@ public class TokenProvider {
     /**
      * AccessToken 생성
      */
-    public String generateAccessToken(Long id){
+    public String generateAccessToken(Member member){
         Date now = new Date();
 
         Date date = new Date(now.getTime() + accessTokenExpirationPeriod);
         return JWT.create()
                 .withSubject(ACCESS_TOKEN_SUBJECT) //JWT
                 .withExpiresAt(new Date(now.getTime()+ accessTokenExpirationPeriod))
-                .withClaim(MEMBER_ID, id)
-                .withClaim("role", "ROLE_USER")
+                .withClaim(MEMBER_ID, member.getId())
+                .withClaim("role", member.getRole())
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
@@ -82,9 +83,9 @@ public class TokenProvider {
                 .sign(Algorithm.HMAC512(secretKey));
     }
 
-    public TokenResponseDTO generateAccessTokenAndRefreshToken(Long id, String ua, Boolean isAutoLogin){
-        String accessToken = generateAccessToken(id);
-        String refreshToken = generateRefreshToken(id);
+    public TokenResponseDTO generateAccessTokenAndRefreshToken(Member member, String ua, Boolean isAutoLogin){
+        String accessToken = generateAccessToken(member);
+        String refreshToken = generateRefreshToken(member.getId());
 
 
 
@@ -104,9 +105,9 @@ public class TokenProvider {
 
         refreshTokenRepository.save(token);
 
-        memberRepository.findById(id)
-                .ifPresent(member -> {
-                    member.updateRefreshToken(token);
+        memberRepository.findById(member.getId())
+                .ifPresent(m -> {
+                    m.updateRefreshToken(token);
                 });
 
         return TokenResponseDTO.builder()

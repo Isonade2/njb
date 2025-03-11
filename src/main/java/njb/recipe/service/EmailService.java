@@ -5,15 +5,15 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@EnableAsync
 public class EmailService {
     private final JavaMailSender mailSender;
 
@@ -29,6 +29,7 @@ public class EmailService {
      * @param to 수신자 이메일
      * @param activationToken 회원 활성화 토큰
      */
+    @Async
     public void sendEmail(String to, String activationToken){
         String activationLink = domain + "/auth/activate?token=" + activationToken;
         try {
