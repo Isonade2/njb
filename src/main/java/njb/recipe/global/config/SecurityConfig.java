@@ -62,6 +62,7 @@ public class SecurityConfig {
                         //.requestMatchers("/api/**","/auth/**", "/refri/**").permitAll()
                         .requestMatchers("/favicon.ico","/error").permitAll()
                         .requestMatchers("/").permitAll()
+                        .requestMatchers("/auth/logout").authenticated()
                                 .anyRequest().authenticated())
                         //.anyRequest().authenticated());
                 .oauth2Login(oauth ->
