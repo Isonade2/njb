@@ -1,5 +1,8 @@
 package njb.recipe.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import njb.recipe.global.jwt.CustomUserDetails;
@@ -46,4 +49,24 @@ public class TestController {
         ChatResponse call = chatModel.call(new Prompt(userMessage));
         return call.toString();
     }
+
+    @GetMapping("/cookie-test")
+    public String cookieTest(HttpServletResponse response){
+        Cookie cookie = new Cookie("test", "test");
+        cookie.setMaxAge(360);
+        response.addCookie(cookie);
+        return "cookie test";
+
+    }
+
+    @GetMapping("/cookie-test2")
+    public String cookieTest2(HttpServletRequest request, HttpServletResponse response){
+        Cookie[] cookies = request.getCookies();
+        for (Cookie cookie : cookies) {
+            log.info("cookie: {}", cookie);
+        }
+        return "cookie test";
+
+    }
+
 }
