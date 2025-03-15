@@ -78,9 +78,11 @@ jobs:
             mkdir -p ~/app
             cd ~/app
 
-            echo "📝 Creating .env file on EC2..."
-            touch .env
-            echo "JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION:-3600}" >> .env
+            echo "📝 Removing existing .env file to prevent duplicates..."
+            rm -f .env
+
+            echo "📝 Creating new .env file on EC2..."
+            echo "JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION:-3600}" > .env
             echo "JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION:-86400}" >> .env
             echo "JWT_SECRET=${JWT_SECRET:-default_secret}" >> .env
             echo "MAIL_USERNAME=${MAIL_USERNAME:-default@example.com}" >> .env
