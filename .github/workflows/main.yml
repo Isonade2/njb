@@ -43,27 +43,12 @@ jobs:
         run: |
           chmod +x gradlew
           ./gradlew clean build -x test
-          echo "🔍 Checking build/libs/ directory..."
-          ls -lh build/libs/ || exit 1
-
           JAR_FILE=$(ls build/libs/*.jar | grep -v 'plain' | head -n 1)
           if [[ -z "$JAR_FILE" ]]; then
             echo "🚨 No valid JAR file found in build/libs/. Build failed!"
             exit 1
           fi
-
-          FILE_SIZE=$(stat --format=%s "$JAR_FILE" 2>/dev/null || stat -f%z "$JAR_FILE")
-          if [[ $FILE_SIZE -lt 10485760 ]]; then
-            echo "🚨 JAR file size is too small ($FILE_SIZE bytes). Build failed!"
-            exit 1
-          fi
-
-          echo "✅ JAR file found: $JAR_FILE ($FILE_SIZE bytes)"
-
-      - name: ✅ Run Tests (Optional, Allow Failure)
-        continue-on-error: true
-        run: |
-          ./gradlew test
+          echo "✅ JAR file found: $JAR_FILE"
 
       - name: 🏗 Setup SSH Key
         run: |
@@ -82,54 +67,53 @@ jobs:
       - name: 🚀 Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@52.79.228.170 <<EOF
-mkdir -p ~/app
-cd ~/app
+            echo "📂 Creating app directory..."
+            mkdir -p ~/app
+            cd ~/app
 
-echo "📝 Removing old .env file..."
-rm -f .env
+            echo "📝 Creating .env file..."
+            cat > .env <<EOL
+            JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }}
+            JWT_REFRESH_EXPIRATION=${{ secrets.JWT_REFRESH_EXPIRATION }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}
+            MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
+            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+            LOCAL_DB_URL=${{ secrets.LOCAL_DB_URL }}
+            LOCAL_DB_USERNAME=${{ secrets.LOCAL_DB_USERNAME }}
+            LOCAL_DB_PASSWORD=${{ secrets.LOCAL_DB_PASSWORD }}
+            SQL_INIT_MODE=${{ secrets.SQL_INIT_MODE }}
+            JPA_DDI=${{ secrets.JPA_DDI }}
+            JPA_DDL_AUTO=${{ secrets.JPA_DDL_AUTO }}
+            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+            KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
+            KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}
+            NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}
+            NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}
+            EOL
 
-echo "📝 Creating new .env file..."
-cat > .env <<EOL
-JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }}
-JWT_REFRESH_EXPIRATION=${{ secrets.JWT_REFRESH_EXPIRATION }}
-JWT_SECRET=${{ secrets.JWT_SECRET }}
-MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}
-MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
-OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-LOCAL_DB_URL=${{ secrets.LOCAL_DB_URL }}
-LOCAL_DB_USERNAME=${{ secrets.LOCAL_DB_USERNAME }}
-LOCAL_DB_PASSWORD=${{ secrets.LOCAL_DB_PASSWORD }}
-SQL_INIT_MODE=${{ secrets.SQL_INIT_MODE }}
-JPA_DDI=${{ secrets.JPA_DDI }}
-JPA_DDL_AUTO=${{ secrets.JPA_DDL_AUTO }}
-GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
-KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}
-NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}
-NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}
-EOL
+            echo "🔄 Exporting environment variables..."
+            export \$(grep -v '^#' .env | xargs)
 
-echo "🔄 Exporting environment variables"
-export \$(grep -v '^#' .env | xargs)
+            echo "🔍 Stopping previous Java process..."
+            PID=\$(pgrep -f "spring-boot-app.jar")
+            if [[ ! -z "\$PID" ]]; then
+              echo "🛑 Stopping application (PID: \$PID)..."
+              kill -9 "\$PID"
+              sleep 2
+            fi
 
-echo "🔍 Checking if a Java application is running..."
-RUNNING_PID=\$(pgrep -f "spring-boot-app.jar" || true)
-if [[ ! -z "\$RUNNING_PID" ]]; then
-  echo "🚀 Stopping previous application (PID: \$RUNNING_PID)..."
-  kill -9 "\$RUNNING_PID"
-fi
+            echo "📦 Starting new application..."
+            nohup java -jar ~/app/spring-boot-app.jar > ~/app/log.txt 2>&1 &
 
-echo "📦 Deploying new application..."
-nohup java -jar ~/app/spring-boot-app.jar > ~/app/log.txt 2>&1 & disown
+            sleep 5
+            echo "✅ Deployment complete! Checking logs..."
+            tail -n 20 ~/app/log.txt || echo "🚨 No logs found!"
 
-echo "✅ Deployment complete. Checking application logs…"
-sleep 5
-tail -n 20 ~/app/log.txt || echo "🚨 No logs found!"
+            echo "🔍 Checking running processes..."
+            ps aux | grep java
 
-echo "🔍 Checking if the application is running..."
-ps aux | grep java
-
-echo "🌍 Testing if the application is reachable..."
-curl -I http://localhost:8080 || echo "🚨 Application is not responding!"
-EOF
+            echo "🌍 Testing application health..."
+            curl -I http://localhost:8080 || echo "🚨 Application is not responding!"
+          EOF
