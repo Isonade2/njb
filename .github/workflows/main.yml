@@ -65,11 +65,10 @@ jobs:
         run: |
           ./gradlew test
 
-      - name: 🏗 Setup SSH Key
+      - name: 🏗 Setup SSH Key  # ✅ SSH 키 저장 방식 수정
         run: |
-          echo "$PRIVATE_KEY" > private_key.pem
-          chmod 400 private_key.pem
-          
+          echo "${{ secrets.EC2_SSH_KEY }}" | base64 --decode > private_key.pem
+          chmod 600 private_key.pem
 
       - name: 🔍 Test SSH Connection
         run: |
