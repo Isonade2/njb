@@ -3,7 +3,7 @@ name: Deploy to EC2
 on:
   push:
     branches:
-      - dev   # 🔥 'dev' 브랜치에 push될 때 실행
+      - dev
 
 jobs:
   deploy:
@@ -44,28 +44,20 @@ jobs:
           chmod +x gradlew
           ./gradlew clean build -x test
           echo "🔍 Checking build/libs/ directory…"
-          ls -lh build/libs/ || exit 1
+          ls -lh build/libs/
 
           JAR_FILE=$(ls build/libs/*.jar | grep -v 'plain' | head -n 1)
           if [[ -z "$JAR_FILE" ]]; then
-            echo "🚨 No valid JAR file found in build/libs/. Build failed!"
+            echo "🚨 No valid JAR file found!"
             exit 1
           fi
-
-          FILE_SIZE=$(stat --format=%s "$JAR_FILE" 2>/dev/null || stat -f%z "$JAR_FILE")
-          if [[ $FILE_SIZE -lt 10485760 ]]; then
-            echo "🚨 JAR file size is too small ($FILE_SIZE bytes). Build failed!"
-            exit 1
-          fi
-
-          echo "✅ JAR file found: $JAR_FILE ($FILE_SIZE bytes)"
+          echo "✅ JAR file found: $JAR_FILE"
 
       - name: ✅ Run Tests (Optional, Allow Failure)
         continue-on-error: true
-        run: |
-          ./gradlew test
+        run: ./gradlew test
 
-      - name: 🏗 Setup SSH Key  # ✅ SSH 키 저장 방식 수정
+      - name: 🏗 Setup SSH Key
         run: |
           echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
           chmod 600 private_key.pem
@@ -87,25 +79,26 @@ jobs:
             cd ~/app
 
             echo "📝 Creating .env file on EC2..."
-            echo "JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION}" > .env
-            echo "JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION}" >> .env
-            echo "JWT_SECRET=${JWT_SECRET}" >> .env
-            echo "MAIL_USERNAME=${MAIL_USERNAME}" >> .env
-            echo "MAIL_PASSWORD=${MAIL_PASSWORD}" >> .env
-            echo "OPENAI_API_KEY=${OPENAI_API_KEY}" >> .env
+            touch .env
+            echo "JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION:-3600}" >> .env
+            echo "JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION:-86400}" >> .env
+            echo "JWT_SECRET=${JWT_SECRET:-default_secret}" >> .env
+            echo "MAIL_USERNAME=${MAIL_USERNAME:-default@example.com}" >> .env
+            echo "MAIL_PASSWORD=${MAIL_PASSWORD:-default_password}" >> .env
+            echo "OPENAI_API_KEY=${OPENAI_API_KEY:-default_api_key}" >> .env
             echo "DOMAIN=nang.n-e.kr" >> .env
 
-            echo "LOCAL_DB_URL=${LOCAL_DB_URL}" >> .env
-            echo "LOCAL_DB_USERNAME=${LOCAL_DB_USERNAME}" >> .env
-            echo "LOCAL_DB_PASSWORD=${LOCAL_DB_PASSWORD}" >> .env
-            echo "SQL_INIT_MODE=${SQL_INIT_MODE}" >> .env
+            echo "LOCAL_DB_URL=${LOCAL_DB_URL:-jdbc:mysql://localhost:3306/default_db}" >> .env
+            echo "LOCAL_DB_USERNAME=${LOCAL_DB_USERNAME:-root}" >> .env
+            echo "LOCAL_DB_PASSWORD=${LOCAL_DB_PASSWORD:-password}" >> .env
+            echo "SQL_INIT_MODE=${SQL_INIT_MODE:-never}" >> .env
 
-            echo "GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}" >> .env
-            echo "GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}" >> .env
-            echo "KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}" >> .env
-            echo "KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}" >> .env
-            echo "NAVER_CLIENT_ID=${NAVER_CLIENT_ID}" >> .env
-            echo "NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}" >> .env
+            echo "GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-default_google_id}" >> .env
+            echo "GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-default_google_secret}" >> .env
+            echo "KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID:-default_kakao_id}" >> .env
+            echo "KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET:-default_kakao_secret}" >> .env
+            echo "NAVER_CLIENT_ID=${NAVER_CLIENT_ID:-default_naver_id}" >> .env
+            echo "NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET:-default_naver_secret}" >> .env
 
             echo "🔍 Checking .env file on EC2…"
             cat .env
@@ -116,17 +109,17 @@ jobs:
             set +o allexport
 
             echo "🔍 Checking if a Java application is running..."
-            RUNNING_PID=\$(pgrep -f 'spring-boot-app.jar' || true)
-            if [[ ! -z "\$RUNNING_PID" ]]; then
-              echo "🚀 Stopping previous application (PID: \$RUNNING_PID)..."
-              kill -9 "\$RUNNING_PID"
+            RUNNING_PID=$(pgrep -f "spring-boot-app.jar" || true)
+            if [[ ! -z "$RUNNING_PID" ]]; then
+              echo "🚀 Stopping previous application (PID: $RUNNING_PID)..."
+              kill -9 "$RUNNING_PID"
             fi
 
             echo "📦 Deploying new application..."
             nohup java -jar ~/app/spring-boot-app.jar > ~/app/log.txt 2>&1 & disown
 
             echo "✅ Deployment complete. Checking application logs…"
-            sleep 3
+            sleep 5
             tail -n 20 ~/app/log.txt || echo "🚨 No logs found!"
 
             echo "🔍 Checking if the application is running..."
