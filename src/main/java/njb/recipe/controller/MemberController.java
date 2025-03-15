@@ -1,5 +1,7 @@
 package njb.recipe.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import njb.recipe.dto.ApiResponseDTO;
@@ -21,6 +23,9 @@ public class MemberController {
     private final MemberService memberService;
 
 
+
+    @Operation(summary = "유저 정보 조회", description = "유저 정보를 조회합니다.",
+    security = {@SecurityRequirement(name = "accessToken"), @SecurityRequirement(name = "refreshToken")})
     @GetMapping("/userinfo")
     public ResponseEntity<ApiResponseDTO<UserInfoResponseDTO>> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails){
         log.info("/userinfo");
