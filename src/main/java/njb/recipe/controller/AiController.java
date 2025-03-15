@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping
 public class AiController {
     private final AiService aiService;
-    private final OpenAiChatModel chatModel;
+    private final OpenAiChatModel chatModel; 
 
 
     /**
