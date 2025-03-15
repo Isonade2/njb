@@ -67,8 +67,8 @@ jobs:
 
       - name: 🏗 Setup SSH Key
         run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" > private_key.pem
-          chmod 400 private_key.pem
+          echo "${{ secrets.EC2_SSH_KEY }}" | tr -d '\r' > private_key.pem
+          chmod 600 private_key.pem
 
       - name: 🔍 Test SSH Connection
         run: |
@@ -87,25 +87,27 @@ jobs:
             cd ~/app
 
             echo "📝 Creating .env file on EC2..."
-            echo "JWT_ACCESS_EXPIRATION=$JWT_ACCESS_EXPIRATION" > .env
-            echo "JWT_REFRESH_EXPIRATION=$JWT_REFRESH_EXPIRATION" >> .env
-            echo "JWT_SECRET=$JWT_SECRET" >> .env
-            echo "MAIL_USERNAME=$MAIL_USERNAME" >> .env
-            echo "MAIL_PASSWORD=$MAIL_PASSWORD" >> .env
-            echo "OPENAI_API_KEY=$OPENAI_API_KEY" >> .env
-            echo "DOMAIN=nang.n-e.kr" >> .env
+            cat > .env <<EOL
+            JWT_ACCESS_EXPIRATION=$JWT_ACCESS_EXPIRATION
+            JWT_REFRESH_EXPIRATION=$JWT_REFRESH_EXPIRATION
+            JWT_SECRET=$JWT_SECRET
+            MAIL_USERNAME=$MAIL_USERNAME
+            MAIL_PASSWORD=$MAIL_PASSWORD
+            OPENAI_API_KEY=$OPENAI_API_KEY
+            DOMAIN=nang.n-e.kr
 
-            echo "LOCAL_DB_URL=$LOCAL_DB_URL" >> .env
-            echo "LOCAL_DB_USERNAME=$LOCAL_DB_USERNAME" >> .env
-            echo "LOCAL_DB_PASSWORD=$LOCAL_DB_PASSWORD" >> .env
-            echo "SQL_INIT_MODE=$SQL_INIT_MODE" >> .env
+            LOCAL_DB_URL=$LOCAL_DB_URL
+            LOCAL_DB_USERNAME=$LOCAL_DB_USERNAME
+            LOCAL_DB_PASSWORD=$LOCAL_DB_PASSWORD
+            SQL_INIT_MODE=$SQL_INIT_MODE
 
-            echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> .env
-            echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" >> .env
-            echo "KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID" >> .env
-            echo "KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET" >> .env
-            echo "NAVER_CLIENT_ID=$NAVER_CLIENT_ID" >> .env
-            echo "NAVER_CLIENT_SECRET=$NAVER_CLIENT_SECRET" >> .env
+            GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID
+            GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET
+            KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID
+            KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET
+            NAVER_CLIENT_ID=$NAVER_CLIENT_ID
+            NAVER_CLIENT_SECRET=$NAVER_CLIENT_SECRET
+            EOL
 
             echo "🔍 Checking .env file on EC2…"
             cat .env
