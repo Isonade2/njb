@@ -59,7 +59,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers("/api/**","/auth/**", "/login/oauth2/code/code/kakao").permitAll()
-                        //.requestMatchers("/api/**","/auth/**", "/refri/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**","/swagger-resources/**").permitAll()
                         .requestMatchers("/favicon.ico","/error").permitAll()
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/auth/logout").authenticated()
