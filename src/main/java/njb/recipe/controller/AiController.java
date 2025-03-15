@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Validated
@@ -36,7 +38,7 @@ public class AiController {
      * @return
      */
     @PostMapping("/ingredients/image-recognition")
-    public ResponseEntity<ApiResponseDTO<IngredientImageRecognitionDTO>> imageRecognition(@RequestParam(required = false, name = "file") @NotNull MultipartFile file,
+    public ResponseEntity<ApiResponseDTO<List<IngredientImageRecognitionDTO>>> imageRecognition(@RequestParam(required = false, name = "file") @NotNull MultipartFile file,
                                                                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
 
         if(file.isEmpty()){
@@ -51,8 +53,8 @@ public class AiController {
         aiService.checkAiApiUsage(Long.parseLong(userDetails.getMemberId()));
 
         // AI에게 전달할 프롬프트 구성
-        IngredientImageRecognitionDTO ingredientImageRecognitionDTO = aiService.recognizeIngredient(file);
-        ApiResponseDTO<IngredientImageRecognitionDTO> responseDTO = ResponseUtils.success(ingredientImageRecognitionDTO, "AI API 호출 성공");
+        List<IngredientImageRecognitionDTO> ingredientImageRecognitionDTOS = aiService.recognizeIngredient(file);
+        ApiResponseDTO<List<IngredientImageRecognitionDTO>> responseDTO = ResponseUtils.success(ingredientImageRecognitionDTOS, "AI API 호출 성공");
         return ResponseEntity.ok(responseDTO);
     }
 

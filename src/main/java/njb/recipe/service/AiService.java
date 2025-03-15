@@ -27,6 +27,7 @@ import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,24 +40,31 @@ public class AiService {
     private final MemberRepository memberRepository;
     private final OpenAiChatModel chatModel;
 
-    public IngredientImageRecognitionDTO recognizeIngredient(MultipartFile file) {
+    public List<IngredientImageRecognitionDTO> recognizeIngredient(MultipartFile file) {
         try {
             // AI에게 전달할 프롬프트 구성
-            UserMessage userMessage = new UserMessage("냉장고 관리 앱의 기능 개발을 위해, 첨부된 이미지에서 보이는 음식 재료를 인식하여 " +
-                    "특정 JSON 형식으로 응답해주는 AI 기능이 필요합니다. 이 기능은 사용자가 사진 촬영을 통해 간편하게 냉장고 안에 있는 재료를 추가할 수 있도록 합니다. " +
-                    "첨부된 이미지에서 재료를 인식한 후, 오직 다음과 같은 형식의 JSON으로만 응답해야 합니다:\n" +
-                    "만약 인식된 재료가 토마토 3개라면 다음과 같은 JSON으로 응답해야 합니다:\n" +
-                    "\n\n" +
-                    " " +
-                    "형식예시: " +
-                    "{\n" +
-                    "    \"name\": \"토마토\",\n" +
-                    "    \"quantity\": \"3\",\n" +
-                    "    \"category\": \"[육류, 채소, 과일, 수산물, 달걀/유제품, 양념/소스, 가공식품, 곡류, 기타]\"\n" +
-                    "}" +
-                    "만약 이미지를 인식할 수 없다면 다음과 같은 JSON으로 응답해야 합니다:\n" +
-                    "{ \"error\": \"이미지를 인식할 수 없습니다.\" }",
-                    new Media(MimeTypeUtils.IMAGE_PNG, file.getResource()));
+            UserMessage userMessage = new UserMessage(
+                    "냉장고 관리 앱의 기능 개발을 위해, 첨부된 이미지에서 보이는 음식 재료를 인식하여 "
+                            + "특정 JSON 형식으로만 응답해주는 AI 기능이 필요합니다. "
+                            + "만약 여러 재료가 인식된다면 JSON 배열로 모두 반환해주세요. 예를 들어, "
+                            + "토마토 3개, 양파 2개가 인식된다면:\n\n"
+                            + "[\n"
+                            + "  {\n"
+                            + "    \"name\": \"토마토\",\n"
+                            + "    \"quantity\": \"3\",\n"
+                            + "    \"category\": \"과일\"\n"
+                            + "  },\n"
+                            + "  {\n"
+                            + "    \"name\": \"양파\",\n"
+                            + "    \"quantity\": \"2\",\n"
+                            + "    \"category\": \"채소\"\n"
+                            + "  }\n"
+                            + "]\n\n"
+                            + "만약 이미지를 인식할 수 없다면 다음과 같은 JSON 객체로만 응답해주세요:\n"
+                            + "{ \"error\": \"이미지를 인식할 수 없습니다.\" }",
+                    new Media(MimeTypeUtils.IMAGE_PNG, file.getResource())
+            );
+
 
             // AI API 호출
             ChatResponse chatResponse = chatModel.call(new Prompt(userMessage));
@@ -73,8 +81,15 @@ public class AiService {
             if(rootNode.has("error")){
                 throw new AiResponseError(rootNode.get("error").asText());
             }
-            IngredientImageRecognitionDTO result = mapper.readValue(jsonResponse, IngredientImageRecognitionDTO.class);
-            return result;
+            if(rootNode.isArray()) {
+                List<IngredientImageRecognitionDTO> resultList = mapper.readValue(jsonResponse,
+                        mapper.getTypeFactory().constructCollectionType(List.class, IngredientImageRecognitionDTO.class));
+                return resultList;
+            }else{
+                IngredientImageRecognitionDTO singleResult = mapper.readValue(jsonResponse, IngredientImageRecognitionDTO.class);
+                return List.of(singleResult);
+            }
+
 
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
@@ -83,7 +98,7 @@ public class AiService {
     }
 
     private String cleanJson(String jsonResponse) {
-        Pattern pattern = Pattern.compile("\\{.*\\}", Pattern.DOTALL);
+        Pattern pattern = Pattern.compile("\\{.*\\}|\\[.*\\]", Pattern.DOTALL);
         Matcher matcher = pattern.matcher(jsonResponse.trim());
         if (matcher.find()) {
             return matcher.group();
