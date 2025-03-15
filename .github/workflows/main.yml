@@ -82,52 +82,52 @@ jobs:
       - name: 🚀 Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@52.79.228.170 << 'EOF'
-            echo "📂 Checking and creating app directory..."
-            mkdir -p ~/app
-            cd ~/app
+          echo "📂 Checking and creating app directory..."
+          mkdir -p ~/app
+          cd ~/app
 
-            echo "📝 Creating .env file on EC2..."
-            cat <<EOL > .env
-JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION}
-JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION}
-JWT_SECRET=${JWT_SECRET}
-MAIL_USERNAME=${MAIL_USERNAME}
-MAIL_PASSWORD=${MAIL_PASSWORD}
-OPENAI_API_KEY=${OPENAI_API_KEY}
-DOMAIN=nang.n-e.kr
+          echo "📝 Creating .env file on EC2..."
+          cat <<EOL > .env
+          JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION}
+          JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION}
+          JWT_SECRET=${JWT_SECRET}
+          MAIL_USERNAME=${MAIL_USERNAME}
+          MAIL_PASSWORD=${MAIL_PASSWORD}
+          OPENAI_API_KEY=${OPENAI_API_KEY}
+          DOMAIN=nang.n-e.kr
 
-LOCAL_DB_URL=${LOCAL_DB_URL}
-LOCAL_DB_USERNAME=${LOCAL_DB_USERNAME}
-LOCAL_DB_PASSWORD=${LOCAL_DB_PASSWORD}
-SQL_INIT_MODE=${SQL_INIT_MODE}
+          LOCAL_DB_URL=${LOCAL_DB_URL}
+          LOCAL_DB_USERNAME=${LOCAL_DB_USERNAME}
+          LOCAL_DB_PASSWORD=${LOCAL_DB_PASSWORD}
+          SQL_INIT_MODE=${SQL_INIT_MODE}
 
-GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
-GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
-KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}
-NAVER_CLIENT_ID=${NAVER_CLIENT_ID}
-NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}
-EOL
+          GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+          GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+          KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
+          KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}
+          NAVER_CLIENT_ID=${NAVER_CLIENT_ID}
+          NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}
+          EOL
 
-            echo "🔍 Checking .env file on EC2…"
-            cat .env
+          echo "🔍 Checking .env file on EC2…"
+          cat .env
 
-            echo "🔄 Exporting environment variables from .env"
-            set -o allexport
-            source .env
-            set +o allexport
+          echo "🔄 Exporting environment variables from .env"
+          set -o allexport
+          source .env
+          set +o allexport
 
-            echo "🔍 Checking if a Java application is running..."
-            RUNNING_PID=\$(pgrep -f 'spring-boot-app.jar' || true)
-            if [[ ! -z "\$RUNNING_PID" ]]; then
-              echo "🚀 Stopping previous application..."
-              kill -9 "\$RUNNING_PID"
-            fi
+          echo "🔍 Checking if a Java application is running..."
+          RUNNING_PID=\$(pgrep -f 'spring-boot-app.jar' || true)
+          if [[ ! -z "\$RUNNING_PID" ]]; then
+            echo "🚀 Stopping previous application..."
+            kill -9 "\$RUNNING_PID"
+          fi
 
-            echo "📦 Deploying new application..."
-            nohup java -jar spring-boot-app.jar > log.txt 2>&1 & disown
+          echo "📦 Deploying new application..."
+          nohup java -jar spring-boot-app.jar > log.txt 2>&1 & disown
 
-            echo "✅ Deployment complete. Checking application logs…"
-            sleep 5
-            tail -n 20 log.txt
+          echo "✅ Deployment complete. Checking application logs…"
+          sleep 5
+          tail -n 20 log.txt
           EOF
