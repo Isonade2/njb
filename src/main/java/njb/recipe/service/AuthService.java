@@ -7,6 +7,7 @@ import njb.recipe.dto.member.SignupRequestDTO;
 import njb.recipe.dto.token.TokenResponseDTO;
 import njb.recipe.dto.token.TokenRequestDTO;
 import njb.recipe.entity.ActivationToken;
+import njb.recipe.entity.JoinType;
 import njb.recipe.entity.Member;
 import njb.recipe.global.jwt.TokenProvider;
 import njb.recipe.handler.exception.DuplicateEmailException;
@@ -44,6 +45,8 @@ public class AuthService {
 
         Member member = memberRequestDTO.toEntity(passwordEncoder);
         member.activate();
+        member.updateJoinType(JoinType.LOCAL);
+        member.updateRole("ROLE_USER");
         return MemberResponseDTO.of(memberRepository.save(member));
 
     }
