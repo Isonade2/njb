@@ -11,7 +11,7 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Member {
+public class Member extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,5 +60,13 @@ public class Member {
 
     public void activate(){
         this.activated = true;
+    }
+
+    public void updateRole(String role){
+        this.role = role;
+    }
+
+    public void updateJoinType(JoinType joinType){
+        this.joinType = joinType;
     }
 }
