@@ -67,8 +67,9 @@ jobs:
 
       - name: 🏗 Setup SSH Key
         run: |
-          echo "${{ secrets.EC2_SSH_KEY }}" | tr -d '\r' > private_key.pem
-          chmod 600 private_key.pem
+          echo "$PRIVATE_KEY" > private_key.pem
+          chmod 400 private_key.pem
+          
 
       - name: 🔍 Test SSH Connection
         run: |
