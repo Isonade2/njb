@@ -23,6 +23,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+
 @RestController
 @RequiredArgsConstructor
 @Validated
@@ -116,6 +118,31 @@ public class AuthController {
 
         ApiResponseDTO<TokenResponseDTO> responseDTO = ResponseUtils.success(tokenResponseDTO, "토큰 재발급 성공");
         return ResponseEntity.ok(responseDTO);
+    }
+
+    /**
+     * 로그아웃
+     * @param request
+     * @param response
+     * @return
+     */
+    @GetMapping("/logout")
+    public ResponseEntity<ApiResponseDTO<?>> logout(HttpServletRequest request, HttpServletResponse response){
+        String[] targetCookies = {"accessToken","refreshToken"};
+        Cookie[] cookies = request.getCookies();
+
+        if(cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (Arrays.asList(targetCookies).contains(cookie.getName())) {
+                    cookie.setMaxAge(0);
+                    cookie.setPath("/");
+                    cookie.setDomain(domain);
+                    cookie.setValue("");
+                    response.addCookie(cookie);
+                }
+            }
+        }
+        return ResponseEntity.ok(ResponseUtils.success("로그아웃 성공"));
     }
 
 
