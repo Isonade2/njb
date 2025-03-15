@@ -3,7 +3,7 @@ jwt:
 
   access:
     expiration: ${JWT_ACCESS_EXPIRATION:60000} # 1분 (밀리초)
-    expiration_seconds: ${JWT_ACCESS_EXPIRATION_SECONDS:60} # 1분 (초)
+    expiration_seconds: ${JWT_ACCESS_EXPIRATION_SECONDS:300} # 5분 (초)
     # expiration: ${JWT_ACCESS_EXPIRATION:86400000} # 하루 (밀리초)
     # expiration_seconds: ${JWT_ACCESS_EXPIRATION_SECONDS:86400} # 하루 (초)
     header: Authorization
