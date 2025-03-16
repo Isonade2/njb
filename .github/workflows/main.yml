@@ -72,26 +72,27 @@ jobs:
             cd ~/app
 
             echo "📝 Creating .env file..."
-            cat > .env <<EOL
-            JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }}
-            JWT_REFRESH_EXPIRATION=${{ secrets.JWT_REFRESH_EXPIRATION }}
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
-            MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}
-            MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}
-            OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
-            LOCAL_DB_URL=${{ secrets.LOCAL_DB_URL }}
-            LOCAL_DB_USERNAME=${{ secrets.LOCAL_DB_USERNAME }}
-            LOCAL_DB_PASSWORD=${{ secrets.LOCAL_DB_PASSWORD }}
-            SQL_INIT_MODE=${{ secrets.SQL_INIT_MODE }}
-            JPA_DDI=${{ secrets.JPA_DDI }}
-            JPA_DDL_AUTO=${{ secrets.JPA_DDL_AUTO }}
-            GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-            GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-            KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}
-            KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}
-            NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}
-            NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}
-            EOL
+            rm -f .env  # 기존 파일 삭제 (불필요한 내용 방지)
+            touch .env
+
+            echo "JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }}" >> .env
+            echo "JWT_REFRESH_EXPIRATION=${{ secrets.JWT_REFRESH_EXPIRATION }}" >> .env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
+            echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
+            echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+            echo "LOCAL_DB_URL=${{ secrets.LOCAL_DB_URL }}" >> .env
+            echo "LOCAL_DB_USERNAME=${{ secrets.LOCAL_DB_USERNAME }}" >> .env
+            echo "LOCAL_DB_PASSWORD=${{ secrets.LOCAL_DB_PASSWORD }}" >> .env
+            echo "SQL_INIT_MODE=${{ secrets.SQL_INIT_MODE }}" >> .env
+            echo "JPA_DDI=${{ secrets.JPA_DDI }}" >> .env
+            echo "JPA_DDL_AUTO=${{ secrets.JPA_DDL_AUTO }}" >> .env
+            echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+            echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+            echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
+            echo "KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}" >> .env
+            echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}" >> .env
+            echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}" >> .env
 
             echo "🔄 Exporting environment variables..."
             export \$(grep -v '^#' .env | xargs)
