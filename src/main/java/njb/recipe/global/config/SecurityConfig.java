@@ -89,7 +89,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 특정 도메인만 허용 (CORS 오류 방지)
-        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedOrigins(List.of("http://local.recepic.shop:3000", "http://recipic.shop"));
 
         // 허용할 HTTP 메소드 설정
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
