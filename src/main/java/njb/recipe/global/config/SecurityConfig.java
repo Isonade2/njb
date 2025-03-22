@@ -89,7 +89,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 특정 도메인만 허용 (CORS 오류 방지)
-        configuration.setAllowedOrigins(List.of("http://local.nang.n-e.kr:3000", domain));
+        configuration.setAllowedOrigins(List.of("*"));
 
         // 허용할 HTTP 메소드 설정
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
