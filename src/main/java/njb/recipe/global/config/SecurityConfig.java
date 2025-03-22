@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import njb.recipe.global.oauth2.CustomOAuth2UserService;
 import njb.recipe.global.oauth2.OAuth2FailureHandler;
 import njb.recipe.global.oauth2.OAuth2SuccessHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,6 +42,9 @@ public class SecurityConfig {
 
     private final CustomOAuth2UserService oAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
+    @Value("${app.domain}")
+    private String domain;
 
 
     @Bean
@@ -85,7 +89,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 특정 도메인만 허용 (CORS 오류 방지)
-        configuration.setAllowedOrigins(List.of("http://local.nang.n-e.kr:3000", "http://nang.n-e.kr"));
+        configuration.setAllowedOrigins(List.of("http://local.nang.n-e.kr:3000", domain));
 
         // 허용할 HTTP 메소드 설정
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
