@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import njb.recipe.global.oauth2.CustomOAuth2UserService;
 import njb.recipe.global.oauth2.OAuth2FailureHandler;
 import njb.recipe.global.oauth2.OAuth2SuccessHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -42,6 +43,9 @@ public class SecurityConfig {
     private final CustomOAuth2UserService oAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
+    @Value("${app.domain}")
+    private String domain;
+
 
     @Bean
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -59,7 +63,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers("/api/**","/auth/**", "/login/oauth2/code/code/kakao").permitAll()
-                        //.requestMatchers("/api/**","/auth/**", "/refri/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**","/swagger-resources/**").permitAll()
                         .requestMatchers("/favicon.ico","/error").permitAll()
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/auth/logout").authenticated()
@@ -85,7 +89,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 특정 도메인만 허용 (CORS 오류 방지)
-        configuration.setAllowedOrigins(List.of("http://local.nang.n-e.kr:3000", "http://nang.n-e.kr"));
+        configuration.setAllowedOrigins(List.of("http://local.recipic.shop:3000", "http://recipic.shop"));
 
         // 허용할 HTTP 메소드 설정
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
