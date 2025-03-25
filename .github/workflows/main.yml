@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      APP_DOMAIN: ${{ secrets.APP_DOMAIN }}
+      DOMAIN: ${{ secrets.DOMAIN }}
       JWT_ACCESS_EXPIRATION: ${{ secrets.JWT_ACCESS_EXPIRATION }}
       JWT_REFRESH_EXPIRATION: ${{ secrets.JWT_REFRESH_EXPIRATION }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
