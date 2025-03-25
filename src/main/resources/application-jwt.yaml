@@ -12,5 +12,5 @@ jwt:
     expiration_seconds: ${JWT_REFRESH_EXPIRATION_SECONDS:1209600} # 2주 (초)
     header: Authorization-refresh
 
-  domain: ${DOMAIN:localhost}
+  domain: ${DOMAIN:recipic.shop}
           
