@@ -70,7 +70,7 @@ public class Member extends BaseTimeEntity{
         this.joinType = joinType;
     }
 
-    // fcm 토큰 용 추가 2개
+    // fcm 토큰 
     @Column(name = "fcm_token", length = 255)
     private String fcmToken;
 
