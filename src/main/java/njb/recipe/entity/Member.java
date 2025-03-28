@@ -69,4 +69,13 @@ public class Member extends BaseTimeEntity{
     public void updateJoinType(JoinType joinType){
         this.joinType = joinType;
     }
+
+    // fcm 토큰 
+    @Column(name = "fcm_token", length = 255)
+    private String fcmToken;
+
+    public void updateFcmToken(String token) {
+        this.fcmToken = token;
+    }
+
 }

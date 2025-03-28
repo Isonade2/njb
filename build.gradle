@@ -57,6 +57,12 @@ dependencies {
 	// 메일 전송을 위한 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+	// fcm
+	 implementation 'org.springframework.boot:spring-boot-starter-web'   // Spring Boot Web
+    implementation 'com.google.firebase:firebase-admin:9.2.0'           // Google Firebase Admin
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.16.1'     // Jackson Data Bind
+	implementation 'com.google.firebase:firebase-admin:9.1.1'
+
 }
 dependencyManagement {
 	imports {

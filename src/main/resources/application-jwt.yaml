@@ -13,4 +13,3 @@ jwt:
     header: Authorization-refresh
 
   domain: ${DOMAIN:recipic.shop}
-          

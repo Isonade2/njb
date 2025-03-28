@@ -2,6 +2,7 @@ package njb.recipe.service;
 
 import lombok.RequiredArgsConstructor;
 import njb.recipe.dto.member.UserInfoResponseDTO;
+import njb.recipe.dto.token.FcmTokenRequestDTO;
 import njb.recipe.entity.Member;
 import njb.recipe.global.jwt.TokenProvider;
 import njb.recipe.handler.exception.UserIdNotFountException;
@@ -21,8 +22,14 @@ public class MemberService {
                 .orElseThrow(() -> new UserIdNotFountException("User Not Found"));
 
         return UserInfoResponseDTO.of(member.getEmail(), member.getNickname());
+    }
 
-
-
+    //fcm 토큰 업데이트 
+    public void updateFcmToken(String memberId, FcmTokenRequestDTO fcmToken) {
+        long mId = Long.parseLong(memberId);
+        Member member = memberRepository.findById(mId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid member ID: " + memberId));
+        member.updateFcmToken(fcmToken.getFcmToken());
+        memberRepository.save(member);
     }
 }
