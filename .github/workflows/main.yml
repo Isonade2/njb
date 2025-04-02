@@ -31,7 +31,7 @@ jobs:
       FIREBASE_TYPE: ${{ secrets.FIREBASE_TYPE }}
       FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
       FIREBASE_PRIVATE_KEY_ID: ${{ secrets.FIREBASE_PRIVATE_KEY_ID }}
-      FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
+      FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY}}
       FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
       FIREBASE_CLIENT_ID: ${{ secrets.FIREBASE_CLIENT_ID }}
       FIREBASE_AUTH_URI: ${{ secrets.FIREBASE_AUTH_URI }}
@@ -76,58 +76,53 @@ jobs:
 
       - name: 🚀 Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@52.79.228.170 <<'EOF'
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@52.79.228.170 <<EOF
             echo "📂 Creating app directory..."
             mkdir -p ~/app
             cd ~/app
 
             echo "📝 Creating .env file..."
-            rm -f .env
+            rm -f .env  # 기존 파일 삭제 (불필요한 내용 방지)
             touch .env
 
-            echo "JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION}" >> .env
-            echo "JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION}" >> .env
-            echo "JWT_SECRET=${JWT_SECRET}" >> .env
-            echo "MAIL_USERNAME=${MAIL_USERNAME}" >> .env
-            echo "MAIL_PASSWORD=${MAIL_PASSWORD}" >> .env
-            echo "OPENAI_API_KEY=${OPENAI_API_KEY}" >> .env
-            echo "LOCAL_DB_URL=${LOCAL_DB_URL}" >> .env
-            echo "LOCAL_DB_USERNAME=${LOCAL_DB_USERNAME}" >> .env
-            echo "LOCAL_DB_PASSWORD=${LOCAL_DB_PASSWORD}" >> .env
-            echo "SQL_INIT_MODE=${SQL_INIT_MODE}" >> .env
-            echo "JPA_DDI=${JPA_DDI}" >> .env
-            echo "JPA_DDL_AUTO=${JPA_DDL_AUTO}" >> .env
-            echo "GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}" >> .env
-            echo "GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}" >> .env
-            echo "KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}" >> .env
-            echo "KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}" >> .env
-            echo "NAVER_CLIENT_ID=${NAVER_CLIENT_ID}" >> .env
-            echo "NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}" >> .env
-            echo "FIREBASE_TYPE=${FIREBASE_TYPE}" >> .env
-            echo "FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID}" >> .env
-            echo "FIREBASE_PRIVATE_KEY_ID=${FIREBASE_PRIVATE_KEY_ID}" >> .env
+            echo "JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }}" >> .env
+            echo "JWT_REFRESH_EXPIRATION=${{ secrets.JWT_REFRESH_EXPIRATION }}" >> .env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            echo "MAIL_USERNAME=${{ secrets.MAIL_USERNAME }}" >> .env
+            echo "MAIL_PASSWORD=${{ secrets.MAIL_PASSWORD }}" >> .env
+            echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+            echo "LOCAL_DB_URL=${{ secrets.LOCAL_DB_URL }}" >> .env
+            echo "LOCAL_DB_USERNAME=${{ secrets.LOCAL_DB_USERNAME }}" >> .env
+            echo "LOCAL_DB_PASSWORD=${{ secrets.LOCAL_DB_PASSWORD }}" >> .env
+            echo "SQL_INIT_MODE=${{ secrets.SQL_INIT_MODE }}" >> .env
+            echo "JPA_DDI=${{ secrets.JPA_DDI }}" >> .env
+            echo "JPA_DDL_AUTO=${{ secrets.JPA_DDL_AUTO }}" >> .env
+            echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+            echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+            echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
+            echo "KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}" >> .env
+            echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}" >> .env
+            echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}" >> .env
+            echo "FIREBASE_TYPE=${{ secrets.FIREBASE_TYPE }}" >> .env
+            echo "FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}" >> .env
+            echo "FIREBASE_PRIVATE_KEY_ID=${{ secrets.FIREBASE_PRIVATE_KEY_ID }}" >> .env
+            echo "FIREBASE_PRIVATE_KEY=${{ secrets.FIREBASE_PRIVATE_KEY }}" >> .env
+            echo "FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }}" >> .env
+            echo "FIREBASE_CLIENT_ID=${{ secrets.FIREBASE_CLIENT_ID }}" >> .env
+            echo "FIREBASE_AUTH_URI=${{ secrets.FIREBASE_AUTH_URI }}" >> .env
+            echo "FIREBASE_TOKEN_URI=${{ secrets.FIREBASE_TOKEN_URI }}" >> .env
+            echo "FIREBASE_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.FIREBASE_AUTH_PROVIDER_X509_CERT_URL }}" >> .env
+            echo "FIREBASE_CLIENT_X509_CERT_URL=${{ secrets.FIREBASE_CLIENT_X509_CERT_URL }}" >> .env
 
-            # ✅ 이 부분만 개선됨: 줄바꿈(\n) 처리 & 쌍따옴표 포함
-            echo "FIREBASE_PRIVATE_KEY=\"$(echo "${FIREBASE_PRIVATE_KEY}" | sed 's/\\n/\\n/g')\"" >> .env
-
-            echo "FIREBASE_CLIENT_EMAIL=${FIREBASE_CLIENT_EMAIL}" >> .env
-            echo "FIREBASE_CLIENT_ID=${FIREBASE_CLIENT_ID}" >> .env
-            echo "FIREBASE_AUTH_URI=${FIREBASE_AUTH_URI}" >> .env
-            echo "FIREBASE_TOKEN_URI=${FIREBASE_TOKEN_URI}" >> .env
-            echo "FIREBASE_AUTH_PROVIDER_X509_CERT_URL=${FIREBASE_AUTH_PROVIDER_X509_CERT_URL}" >> .env
-            echo "FIREBASE_CLIENT_X509_CERT_URL=${FIREBASE_CLIENT_X509_CERT_URL}" >> .env
-
-            echo "✅ .env file created!"
-            cat .env
 
             echo "🔄 Exporting environment variables..."
-            export $(grep -v '^#' .env | xargs)
+            export \$(grep -v '^#' .env | xargs)
 
             echo "🔍 Stopping previous Java process..."
-            PID=$(pgrep -f "spring-boot-app.jar")
-            if [[ ! -z "$PID" ]]; then
-              echo "🛑 Stopping application (PID: $PID)..."
-              kill -9 "$PID"
+            PID=\$(pgrep -f "spring-boot-app.jar")
+            if [[ ! -z "\$PID" ]]; then
+              echo "🛑 Stopping application (PID: \$PID)..."
+              kill -9 "\$PID"
               sleep 2
             fi
 
