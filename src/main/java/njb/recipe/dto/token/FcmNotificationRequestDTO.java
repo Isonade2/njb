@@ -12,6 +12,11 @@ public class FcmNotificationRequestDTO {
         this.body = body;
     }
 
+    // 기본 생성자 추가
+    public FcmNotificationRequestDTO() {
+        // 필드 초기화가 필요하다면 여기에 추가
+    }
+
     // Getter 및 Setter
     public String getFcmToken() {
         return fcmToken;
