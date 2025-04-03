@@ -111,8 +111,9 @@ jobs:
             echo "📦 Decoding FIREBASE_PRIVATE_KEY from base64..."
             echo '${{ secrets.FIREBASE_PRIVATE_KEY }}' | base64 -d > decoded_key.pem
             ENCODED_KEY=$(cat decoded_key.pem | sed ':a;N;$!ba;s/\n/\\n/g')
-            echo "FIREBASE_PRIVATE_KEY=\"$ENCODED_KEY\"" >> .env
+            echo FIREBASE_PRIVATE_KEY="$ENCODED_KEY" >> .env
             rm decoded_key.pem
+
 
             echo "FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }}" >> .env
             echo "FIREBASE_CLIENT_ID=${{ secrets.FIREBASE_CLIENT_ID }}" >> .env
