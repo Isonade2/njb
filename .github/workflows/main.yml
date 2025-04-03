@@ -74,6 +74,7 @@ jobs:
           JAR_FILE=$(ls build/libs/*.jar | grep -v 'plain' | head -n 1)
           scp -i private_key.pem "$JAR_FILE" ubuntu@52.79.228.170:~/app/spring-boot-app.jar
 
+
       - name: 🚀 Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@52.79.228.170 <<'EOF'
@@ -109,7 +110,8 @@ jobs:
 
             echo "📦 Decoding FIREBASE_PRIVATE_KEY from base64..."
             echo '${{ secrets.FIREBASE_PRIVATE_KEY }}' | base64 -d > decoded_key.pem
-            echo "FIREBASE_PRIVATE_KEY=\"\$(cat decoded_key.pem | sed ':a;N;\$!ba;s/\n/\\\\n/g')\"" >> .env
+            ENCODED_KEY=$(cat decoded_key.pem | sed ':a;N;$!ba;s/\n/\\n/g')
+            echo "FIREBASE_PRIVATE_KEY=\"$ENCODED_KEY\"" >> .env
             rm decoded_key.pem
 
             echo "FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }}" >> .env
@@ -120,10 +122,10 @@ jobs:
             echo "FIREBASE_CLIENT_X509_CERT_URL=${{ secrets.FIREBASE_CLIENT_X509_CERT_URL }}" >> .env
 
             echo "🔍 Stopping previous Java process..."
-            PID=\$(pgrep -f "spring-boot-app.jar")
-            if [[ ! -z "\$PID" ]]; then
-              echo "🛑 Stopping application (PID: \$PID)..."
-              kill -9 "\$PID"
+            PID=$(pgrep -f "spring-boot-app.jar")
+            if [[ ! -z "$PID" ]]; then
+              echo "🛑 Stopping application (PID: $PID)..."
+              kill -9 "$PID"
               sleep 2
             fi
 
@@ -140,3 +142,4 @@ jobs:
             echo "🌍 Testing application health..."
             curl -I http://localhost:8080 || echo "🚨 Application is not responding!"
           EOF
+
