@@ -31,7 +31,7 @@ jobs:
       FIREBASE_TYPE: ${{ secrets.FIREBASE_TYPE }}
       FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
       FIREBASE_PRIVATE_KEY_ID: ${{ secrets.FIREBASE_PRIVATE_KEY_ID }}
-      FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY}}
+      FIREBASE_PRIVATE_KEY: ${{ secrets.FIREBASE_PRIVATE_KEY }}
       FIREBASE_CLIENT_EMAIL: ${{ secrets.FIREBASE_CLIENT_EMAIL }}
       FIREBASE_CLIENT_ID: ${{ secrets.FIREBASE_CLIENT_ID }}
       FIREBASE_AUTH_URI: ${{ secrets.FIREBASE_AUTH_URI }}
@@ -76,13 +76,13 @@ jobs:
 
       - name: 🚀 Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@52.79.228.170 <<EOF
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@52.79.228.170 <<'EOF'
             echo "📂 Creating app directory..."
             mkdir -p ~/app
             cd ~/app
 
             echo "📝 Creating .env file..."
-            rm -f .env  # 기존 파일 삭제 (불필요한 내용 방지)
+            rm -f .env
             touch .env
 
             echo "JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }}" >> .env
@@ -106,14 +106,16 @@ jobs:
             echo "FIREBASE_TYPE=${{ secrets.FIREBASE_TYPE }}" >> .env
             echo "FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}" >> .env
             echo "FIREBASE_PRIVATE_KEY_ID=${{ secrets.FIREBASE_PRIVATE_KEY_ID }}" >> .env
-            echo "FIREBASE_PRIVATE_KEY=\"${{ secrets.FIREBASE_PRIVATE_KEY }}\"" | sed 's/\\n/\n/g' >> .env
+
+            echo "📦 Decoding FIREBASE_PRIVATE_KEY from base64..."
+            echo "FIREBASE_PRIVATE_KEY=$(echo '${{ secrets.FIREBASE_PRIVATE_KEY }}' | base64 -d)" >> .env
+
             echo "FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }}" >> .env
             echo "FIREBASE_CLIENT_ID=${{ secrets.FIREBASE_CLIENT_ID }}" >> .env
             echo "FIREBASE_AUTH_URI=${{ secrets.FIREBASE_AUTH_URI }}" >> .env
             echo "FIREBASE_TOKEN_URI=${{ secrets.FIREBASE_TOKEN_URI }}" >> .env
             echo "FIREBASE_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.FIREBASE_AUTH_PROVIDER_X509_CERT_URL }}" >> .env
             echo "FIREBASE_CLIENT_X509_CERT_URL=${{ secrets.FIREBASE_CLIENT_X509_CERT_URL }}" >> .env
-
 
             echo "🔄 Exporting environment variables..."
             export \$(grep -v '^#' .env | xargs)
