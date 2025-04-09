@@ -10,6 +10,9 @@ import java.util.List;
 import java.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 @Service
 public class ExpirationNotificationService {
@@ -28,6 +31,8 @@ public class ExpirationNotificationService {
         LocalDate thresholdDate = LocalDate.now().plusDays(3); // 3일 이내로 남은 재료 조회
         List<Ingredient> expiringIngredients = ingredientRepository.findExpiringIngredients(thresholdDate);
 
+        Map<String, List<String>> userToIngredientsMap = new HashMap<>();
+
         for (Ingredient ingredient : expiringIngredients) {
             String fcmToken = ingredient.getUserFcmToken();
             if (fcmToken == null || fcmToken.isEmpty()) {
@@ -35,10 +40,18 @@ public class ExpirationNotificationService {
                 continue; // FCM 토큰이 없으면 알림을 보내지 않음
             }
 
+            userToIngredientsMap.computeIfAbsent(fcmToken, k -> new ArrayList<>()).add(ingredient.getName());
+        }
+
+        for (Map.Entry<String, List<String>> entry : userToIngredientsMap.entrySet()) {
+            String fcmToken = entry.getKey();
+            List<String> ingredientNames = entry.getValue();
+            String messageBody = String.join(", ", ingredientNames) + "의 유통기한이 임박했습니다!";
+
             FcmNotificationRequestDTO notificationRequest = new FcmNotificationRequestDTO(
                 fcmToken,
                 "유통기한 임박 알림",
-                ingredient.getName() + "의 유통기한이 임박했습니다!"
+                messageBody
             );
             fcmService.sendNotification(notificationRequest);
         }
