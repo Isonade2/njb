@@ -50,4 +50,9 @@ public class Ingredient {
 
     @Column(name = "expiration_date", nullable = false)
     private LocalDate expirationDate; // 유통기한
+
+    // FCM 토큰을 가져오는 메서드 추가
+    public String getUserFcmToken() {
+        return this.member.getFcmToken();
+    }
 }
