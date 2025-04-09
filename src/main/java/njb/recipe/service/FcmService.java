@@ -17,6 +17,13 @@ import lombok.extern.slf4j.Slf4j;
 public class FcmService {
     // fcm에게 푸시 전송
 
+    private final FirebaseMessaging firebaseMessaging;
+
+    // 생성자를 통해 FirebaseMessaging 주입
+    public FcmService(FirebaseMessaging firebaseMessaging) {
+        this.firebaseMessaging = firebaseMessaging;
+    }
+
     public ResponseEntity<String> sendNotification(FcmNotificationRequestDTO request) {
         // 메시지 구성
         Message message = Message.builder()
@@ -29,7 +36,7 @@ public class FcmService {
 
         try {
             // 메시지 전송
-            String response = FirebaseMessaging.getInstance().send(message);
+            String response = firebaseMessaging.send(message);
             log.info("Fcm 푸시 전송 성공: {}", response);
             return ResponseEntity.ok("Fcm 푸시 전송 성공: " + response);
         } catch (FirebaseMessagingException e) {
