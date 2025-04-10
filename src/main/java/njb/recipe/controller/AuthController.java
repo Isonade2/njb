@@ -151,13 +151,13 @@ public class AuthController {
         Cookie refreshToken = new Cookie("refreshToken", tokenResponseDTO.getRefreshToken());
 
 
-        //accessToken.setSecure(true); //HTTPS 설정
+        accessToken.setSecure(true); //HTTPS 설정
         accessToken.setHttpOnly(true);
         accessToken.setPath("/");
         accessToken.setDomain(domain);
         accessToken.setMaxAge(accessTokenExpirationSeconds); // 5분
 
-        //refreshToken.setSecure(true); // HTTPS 설정
+        refreshToken.setSecure(true); // HTTPS 설정
         refreshToken.setHttpOnly(true);
         refreshToken.setPath("/");
         refreshToken.setDomain(domain);
