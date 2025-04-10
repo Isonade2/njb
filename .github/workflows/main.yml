@@ -77,6 +77,8 @@ jobs:
             rm -f .env  # 기존 파일 삭제 (불필요한 내용 방지)
             touch .env
 
+            echo "APP_DOMAIN=${{ secrets.APP_DOMAIN }}" >> .env
+            echo "DOMAIN=${{ secrets.DOMAIN }}" >> .env
             echo "JWT_ACCESS_EXPIRATION=${{ secrets.JWT_ACCESS_EXPIRATION }}" >> .env
             echo "JWT_REFRESH_EXPIRATION=${{ secrets.JWT_REFRESH_EXPIRATION }}" >> .env
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
