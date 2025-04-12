@@ -88,7 +88,7 @@ public class AuthController {
         TokenResponseDTO tokenResponseDTO = authService.login(memberRequestDTO, ua);
 
 
-        addCookiesToResponse(tokenResponseDTO, response, memberRequestDTO.getAutoLogin());
+        //addCookiesToResponse(tokenResponseDTO, response, memberRequestDTO.getAutoLogin());
 
 
         ApiResponseDTO<TokenResponseDTO> responseDTO = ResponseUtils.success(tokenResponseDTO, "로그인 성공");
@@ -114,7 +114,7 @@ public class AuthController {
 
 
         boolean autoLogin = tokenProvider.isAutoLogin(tokenResponseDTO.getRefreshToken());
-        addCookiesToResponse(tokenResponseDTO, response, autoLogin);
+        //addCookiesToResponse(tokenResponseDTO, response, autoLogin);
 
         ApiResponseDTO<TokenResponseDTO> responseDTO = ResponseUtils.success(tokenResponseDTO, "토큰 재발급 성공");
         return ResponseEntity.ok(responseDTO);

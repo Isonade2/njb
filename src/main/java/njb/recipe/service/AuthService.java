@@ -31,7 +31,6 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final ActivationTokenRepository activationTokenRepository;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final AuthenticationManager authenticationManager;
     private final TokenProvider tokenProvider;
     private final EmailService emailService;
@@ -89,6 +88,13 @@ public class AuthService {
         return TokenResponseDTO.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .accessExpireTime(tokenProvider.getExpiration(accessToken, "GMT"))
+                .refreshExpireTime(tokenProvider.getExpiration(refreshToken, "GMT"))
+                .accessExpireTimeEpoch(Long.valueOf(tokenProvider.getExpiration(accessToken, "EPOCH")))
+                .refreshExpireTimeEpoch(Long.valueOf(tokenProvider.getExpiration(refreshToken, "EPOCH")))
+
+
+
                 .build();
     }
 

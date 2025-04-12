@@ -113,6 +113,16 @@ public class TokenProvider {
         return TokenResponseDTO.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                //GMT
+                .accessExpireTime(getExpiration(accessToken, "GMT"))
+                .refreshExpireTime(getExpiration(refreshToken, "GMT"))
+                //long
+                .accessExpireTimeEpoch(Long.valueOf(getExpiration(accessToken, "EPOCH")))
+                .refreshExpireTimeEpoch(Long.valueOf(getExpiration(refreshToken, "EPOCH")))
+
+
+
+
                 .build();
 
     }
@@ -194,4 +204,20 @@ public class TokenProvider {
         return token.getAutoLogin();
     }
 
+    public String getExpiration(String token, String type) {
+        {
+            DecodedJWT decodedJWT = JWT.decode(token);
+            Date expiresAt = decodedJWT.getExpiresAt();
+
+            // GMT
+            if (type.equals("GMT")) {
+                return expiresAt.toString();
+            }
+            // EPOCH
+            else if (type.equals("EPOCH")) {
+                return String.valueOf(expiresAt.getTime() / 1000);
+            }
+            return expiresAt.toString();
+        }
+    }
 }
