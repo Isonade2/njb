@@ -9,5 +9,9 @@ import lombok.Data;
 @Builder
 public class TokenResponseDTO {
     private String accessToken;
+    private String accessExpireTime;
+    private Long accessExpireTimeEpoch;
     private String refreshToken;
+    private String refreshExpireTime;
+    private Long refreshExpireTimeEpoch;
 }
