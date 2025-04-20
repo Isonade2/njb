@@ -2,6 +2,9 @@ spring:
   application:
     name: recipe
 
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local} #기본적으로 로컬 사용
+
   sql:
     init:
       mode: ${SQL_INIT_MODE:always}
@@ -54,3 +57,9 @@ logging:
 app:
   domain: ${APP_DOMAIN:http://localhost:8080}
 
+cloud:
+  aws:
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: recipic-bucket
