@@ -1,8 +1,10 @@
 package njb.recipe.controller;
 
 import lombok.RequiredArgsConstructor;
+import njb.recipe.global.jwt.CustomUserDetails;
 import njb.recipe.service.S3Service;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,6 +20,7 @@ public class S3Controller {
      */
     @GetMapping("/presigned-upload")
     public ResponseEntity<String> getPresignedUploadUrl(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam String folder,
             @RequestParam String fileName
     ) {
@@ -31,6 +34,7 @@ public class S3Controller {
      */
     @GetMapping("/presigned-view")
     public ResponseEntity<String> getPresignedViewUrl(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam String key // 예: ingredient/uuid-filename.jpg
     ) {
         String viewUrl = s3Service.generateViewPresignedUrl(key);
@@ -41,7 +45,8 @@ public class S3Controller {
      * 이미지 삭제 (서버가 직접 삭제 요청)
      */
     @DeleteMapping("/file")
-    public ResponseEntity<Void> deleteImage(@RequestParam String imageUrl) {
+    public ResponseEntity<Void> deleteImage(@RequestParam String imageUrl,
+    @AuthenticationPrincipal CustomUserDetails userDetails) {
         s3Service.deleteFile(imageUrl);
         return ResponseEntity.noContent().build();
     }
