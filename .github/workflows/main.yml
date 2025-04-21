@@ -76,7 +76,6 @@ jobs:
           JAR_FILE=$(ls build/libs/*.jar | grep -v 'plain' | head -n 1)
           scp -i private_key.pem "$JAR_FILE" ubuntu@52.79.228.170:~/app/spring-boot-app.jar
 
-
       - name: 🚀 Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key.pem ubuntu@52.79.228.170 <<'EOF'
@@ -118,13 +117,15 @@ jobs:
             echo FIREBASE_PRIVATE_KEY="$ENCODED_KEY" >> .env
             rm decoded_key.pem
 
-
             echo "FIREBASE_CLIENT_EMAIL=${{ secrets.FIREBASE_CLIENT_EMAIL }}" >> .env
             echo "FIREBASE_CLIENT_ID=${{ secrets.FIREBASE_CLIENT_ID }}" >> .env
             echo "FIREBASE_AUTH_URI=${{ secrets.FIREBASE_AUTH_URI }}" >> .env
             echo "FIREBASE_TOKEN_URI=${{ secrets.FIREBASE_TOKEN_URI }}" >> .env
             echo "FIREBASE_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.FIREBASE_AUTH_PROVIDER_X509_CERT_URL }}" >> .env
             echo "FIREBASE_CLIENT_X509_CERT_URL=${{ secrets.FIREBASE_CLIENT_X509_CERT_URL }}" >> .env
+
+            # ✅ 여기서 프로파일 prod로 설정
+            echo "SPRING_PROFILES_ACTIVE=prod" >> .env
 
             echo "🔍 Stopping previous Java process..."
             PID=$(pgrep -f "spring-boot-app.jar")
@@ -147,4 +148,3 @@ jobs:
             echo "🌍 Testing application health..."
             curl -I http://localhost:8080 || echo "🚨 Application is not responding!"
           EOF
-
