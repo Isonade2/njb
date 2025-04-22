@@ -1,6 +1,7 @@
 package njb.recipe.service;
 
 import lombok.RequiredArgsConstructor;
+import njb.recipe.dto.token.PresignedResponseDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
@@ -25,28 +26,32 @@ public class S3Service {
 
     
      //  S3에 이미지 업로드용 Presigned URL 발급 (PUT 방식)    
-    public String generateUploadPresignedUrl(String folder, String originalFileName) {
-        // 고유한 파일 경로 생성
-        String key = folder + "/" + UUID.randomUUID() + "-" + originalFileName;
+     public PresignedResponseDTO generateUploadPresignedUrl(String folder, String originalFileName) {
+         // 1. 고유한 파일 경로 생성
+         String key = folder + "/" + UUID.randomUUID() + "-" + originalFileName;
 
-        // S3에 업로드할 파일 요청 정보
-        PutObjectRequest objectRequest = PutObjectRequest.builder()
-                .bucket(bucket)
-                .key(key)
-                .contentType("image/jpeg")
-                .build();
+         // 2. Presigned URL 생성 (업로드용)
+         PutObjectRequest objectRequest = PutObjectRequest.builder()
+                 .bucket(bucket)
+                 .key(key)
+                 .contentType("image/jpeg")
+                 .build();
 
-        // Presigned URL 발급 요청
-        PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(
-                r -> r.putObjectRequest(objectRequest)
-                      .signatureDuration(Duration.ofMinutes(5))
-        );
+         PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(
+                 r -> r.putObjectRequest(objectRequest)
+                         .signatureDuration(Duration.ofMinutes(5))
+         );
 
-        return presignedRequest.url().toString(); // 프론트가 이 URL로 업로드하게 됨
-    }
+         // 3. 정적 URL 구성 (서명 없는 S3 URL)
+         String staticUrl = "https://" + bucket + ".s3." + Region.AP_NORTHEAST_2.id() + ".amazonaws.com/" + key;
 
-    
-     // S3에 있는 이미지 조회용 Presigned URL 발급 (GET 방식)
+         // 4. DTO 반환
+         return new PresignedResponseDTO(presignedRequest.url().toString(), staticUrl);
+     }
+
+
+
+    // S3에 있는 이미지 조회용 Presigned URL 발급 (GET 방식)
     public String generateViewPresignedUrl(String key) {
         // 조회 요청 정보 생성
         GetObjectRequest getObjectRequest = GetObjectRequest.builder()

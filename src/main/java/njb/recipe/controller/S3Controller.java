@@ -1,6 +1,7 @@
 package njb.recipe.controller;
 
 import lombok.RequiredArgsConstructor;
+import njb.recipe.dto.token.PresignedResponseDTO;
 import njb.recipe.global.jwt.CustomUserDetails;
 import njb.recipe.service.S3Service;
 import org.springframework.http.ResponseEntity;
@@ -19,14 +20,16 @@ public class S3Controller {
      * 프론트에서 파일 업로드 전에 요청
      */
     @GetMapping("/presigned-upload")
-    public ResponseEntity<String> getPresignedUploadUrl(
-        @AuthenticationPrincipal CustomUserDetails userDetails,
+    public ResponseEntity<PresignedResponseDTO> getPresignedUploadUrl(
+            @AuthenticationPrincipal CustomUserDetails userDetails,  // 인증된 사용자 정보 (확인용)
             @RequestParam String folder,
             @RequestParam String fileName
     ) {
-        String presignedUrl = s3Service.generateUploadPresignedUrl(folder, fileName);
-        return ResponseEntity.ok(presignedUrl);
+        // 서비스에서 Presigned URL + Path 생성
+        PresignedResponseDTO response = s3Service.generateUploadPresignedUrl(folder, fileName);
+        return ResponseEntity.ok(response);  // JSON 형식으로 응답
     }
+
 
     /**
      * 조회용 Presigned URL 발급
