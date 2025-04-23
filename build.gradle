@@ -36,41 +36,43 @@ dependencies {
 	implementation 'com.auth0:java-jwt:4.5.0'
 	implementation("com.github.ua-parser:uap-java:1.6.1")
 
-	//AI 의존성
+	//AI
 	implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
-	//swagger
+	//Swagger
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 
+	// S3 (AWS SDK BOM으로 관리)
+	implementation 'software.amazon.awssdk:s3'
 
+	// Firebase
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
+	// 필요 시 jackson-core (충돌 없으면 놔둬도 됨)
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.16.1'
 
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.h2database:h2'
-	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-	// .env에 정보를 application.yaml로 자동 패치해주는 의존성
+	// dotenv
 	implementation 'io.github.cdimascio:dotenv-java:2.2.0'
 
-	// 메일 전송을 위한 의존성
+	// 메일
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-	// fcm
-	 implementation 'org.springframework.boot:spring-boot-starter-web'   // Spring Boot Web
-    implementation 'com.google.firebase:firebase-admin:9.2.0'           // Google Firebase Admin
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.16.1'     // Jackson Data Bind
-	implementation 'com.google.firebase:firebase-admin:9.1.1'
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 
+	// DB
+	runtimeOnly 'com.h2database:h2'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 
-	//s3
-	implementation 'software.amazon.awssdk:s3:2.20.0'
-
-
+	// Test
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.9.0'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+
 dependencyManagement {
 	imports {
+		mavenBom "software.amazon.awssdk:bom:2.20.0"
 		mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
 	}
 }
