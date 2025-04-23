@@ -1,13 +1,14 @@
 package njb.recipe.global.config;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
-import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 @Configuration
@@ -22,20 +23,55 @@ public class S3Config {
     @Value("${cloud.aws.credentials.secret-key:}")
     private String secretKey;
 
+    @PostConstruct
+    public void checkAwsConfig() {
+        System.out.println("======== AWS CONFIG CHECK ========");
+        System.out.println("Region: " + region);
+        System.out.println("Access Key: " + (accessKey.isEmpty() ? "NOT SET" : "**********"));
+        System.out.println("Secret Key: " + (secretKey.isEmpty() ? "NOT SET" : "**********"));
+        System.out.println("Credentials Type: " + (accessKey.isEmpty() ? "IAM ROLE (EC2)" : "ACCESS KEY (Local)"));
+        System.out.println("===================================");
+    }
+
+    /**
+     * S3Client Bean (파일 업로드/삭제용)
+     */
+    @Bean
+    public S3Client s3Client() {
+        if (!accessKey.isBlank() && !secretKey.isBlank()) {
+            System.out.println("S3Client → Using StaticCredentialsProvider (Access Key)");
+            return S3Client.builder()
+                    .region(Region.of(region))
+                    .credentialsProvider(StaticCredentialsProvider.create(
+                            AwsBasicCredentials.create(accessKey, secretKey)))
+                    .build();
+        } else {
+            System.out.println("S3Client → Using DefaultCredentialsProvider (IAM Role)");
+            return S3Client.builder()
+                    .region(Region.of(region))
+                    .credentialsProvider(DefaultCredentialsProvider.create())
+                    .build();
+        }
+    }
+
+    /**
+     * S3Presigner Bean (Presigned URL 생성용)
+     */
     @Bean
     public S3Presigner s3Presigner() {
-        S3Presigner.Builder builder = S3Presigner.builder()
-                .region(Region.of(region));
-
-        if (!accessKey.isEmpty() && !secretKey.isEmpty()) {
-            // 로컬 환경: Access Key와 Secret Key를 사용
-            builder.credentialsProvider(StaticCredentialsProvider.create(
-                    AwsBasicCredentials.create(accessKey, secretKey)));
+        if (!accessKey.isBlank() && !secretKey.isBlank()) {
+            System.out.println("S3Presigner → Using StaticCredentialsProvider (Access Key)");
+            return S3Presigner.builder()
+                    .region(Region.of(region))
+                    .credentialsProvider(StaticCredentialsProvider.create(
+                            AwsBasicCredentials.create(accessKey, secretKey)))
+                    .build();
         } else {
-            // EC2 환경: IAM Role을 자동 감지
-            builder.credentialsProvider(DefaultCredentialsProvider.create());
+            System.out.println("S3Presigner → Using DefaultCredentialsProvider (IAM Role)");
+            return S3Presigner.builder()
+                    .region(Region.of(region))
+                    .credentialsProvider(DefaultCredentialsProvider.create())
+                    .build();
         }
-
-        return builder.build();
     }
 }
