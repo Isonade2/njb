@@ -40,6 +40,7 @@ jobs:
       FIREBASE_TOKEN_URI: ${{ secrets.FIREBASE_TOKEN_URI }}
       FIREBASE_AUTH_PROVIDER_X509_CERT_URL: ${{ secrets.FIREBASE_AUTH_PROVIDER_X509_CERT_URL }}
       FIREBASE_CLIENT_X509_CERT_URL: ${{ secrets.FIREBASE_CLIENT_X509_CERT_URL }}
+      REDIS_HOST: ${{ secrets.REDIS_HOST }}
 
     steps:
       - name: 📥 Checkout source code
@@ -110,6 +111,7 @@ jobs:
             echo "FIREBASE_TYPE=${{ secrets.FIREBASE_TYPE }}" >> .env
             echo "FIREBASE_PROJECT_ID=${{ secrets.FIREBASE_PROJECT_ID }}" >> .env
             echo "FIREBASE_PRIVATE_KEY_ID=${{ secrets.FIREBASE_PRIVATE_KEY_ID }}" >> .env
+          
 
             echo "📦 Decoding FIREBASE_PRIVATE_KEY from base64..."
             echo '${{ secrets.FIREBASE_PRIVATE_KEY }}' | base64 -d > decoded_key.pem
@@ -123,6 +125,7 @@ jobs:
             echo "FIREBASE_TOKEN_URI=${{ secrets.FIREBASE_TOKEN_URI }}" >> .env
             echo "FIREBASE_AUTH_PROVIDER_X509_CERT_URL=${{ secrets.FIREBASE_AUTH_PROVIDER_X509_CERT_URL }}" >> .env
             echo "FIREBASE_CLIENT_X509_CERT_URL=${{ secrets.FIREBASE_CLIENT_X509_CERT_URL }}" >> .env
+            echo "REDIS_HOST=${{ secrets.REDIS_HOST }}" >> .env
 
             # ✅ 여기서 프로파일 prod로 설정
             echo "SPRING_PROFILES_ACTIVE=prod" >> .env
