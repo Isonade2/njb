@@ -48,6 +48,11 @@ spring:
       #mail.starttls.enable: true
       mail.smtp.auth: true
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
 logging:
   level:
     org:

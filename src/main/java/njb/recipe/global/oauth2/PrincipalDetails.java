@@ -1,9 +1,6 @@
 package njb.recipe.global.oauth2;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import njb.recipe.entity.Member;
+import njb.recipe.domain.member.entity.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;

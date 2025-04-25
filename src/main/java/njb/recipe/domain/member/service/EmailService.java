@@ -1,4 +1,4 @@
-package njb.recipe.service;
+package njb.recipe.domain.member.service;
 
 
 import jakarta.mail.MessagingException;
@@ -57,4 +57,34 @@ public class EmailService {
             throw new RuntimeException("메일 발송에 실패했습니다.", e);
         }
     }
+
+    @Async
+    public void sendPRTEmail(String to, String activationToken){
+        String activationLink = domain + "/member/pw/update?email="+ to +"&token=" + activationToken;
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
+
+            String subject = "[Recipe] 비밀번호 변경 메일";
+
+            // HTML 형식의 이메일 내용 구성
+            String htmlContent = "<html><body>"
+                    + "<p>안녕하세요,</p>"
+                    + "<p>비밀번호를 변경하기 위해 아래 링크를 클릭해주세요:</p>"
+                    + "<p><a href='" + activationLink + "'>" + activationLink + "</a></p>"
+                    + "<p>감사합니다.</p>"
+                    + "</body></html>";
+
+            // 두 번째 파라미터를 true로 설정하여 HTML 형식임을 지정
+            helper.setText(htmlContent, true);
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setFrom(from);
+
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            throw new RuntimeException("메일 발송에 실패했습니다.", e);
+        }
+    }
+
 }

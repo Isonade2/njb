@@ -4,7 +4,7 @@ import njb.recipe.dto.token.FcmNotificationRequestDTO;
 import njb.recipe.dto.token.FcmTokenRequestDTO;
 import njb.recipe.global.jwt.CustomUserDetails;
 import njb.recipe.service.FcmService;
-import njb.recipe.service.MemberService;
+import njb.recipe.domain.member.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

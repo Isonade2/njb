@@ -1,16 +1,15 @@
 package njb.recipe.handler;
 
 
+import ch.qos.logback.core.spi.ErrorCodes;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import njb.recipe.dto.ApiResponseDTO;
-import njb.recipe.handler.exception.AiResponseError;
-import njb.recipe.handler.exception.ApiUsageExceedException;
-import njb.recipe.handler.exception.DuplicateEmailException;
-import njb.recipe.handler.exception.UserIdNotFountException;
+import njb.recipe.handler.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,15 +22,17 @@ import static njb.recipe.dto.ResponseUtils.*;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    /**
+     /**
      * 전역 예외 처리
      * @param ex
      * @return
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGeneralException(Exception ex){
+    public ResponseEntity<ApiResponseDTO<?>> handleGeneralException(Exception ex){
         log.error("Exception", ex);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("error", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(fail("Internal Server Error"));
+        //return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorCode("error", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), ex.getMessage()));
     }
 
     /**
@@ -112,5 +113,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponseDTO<?>> handleAiResponseError(AiResponseError ex){
         log.error("AiResponseError", ex);
         return new ResponseEntity<>(fail(ex.getMessage()),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MemberException.class)
+    public ResponseEntity<ApiResponseDTO<?>> handleMemberException(MemberException ex){
+        log.info("MemberException", ex);
+        log.info("MemberException: {}", ex.getErrorCode().getMessage());
+        return new ResponseEntity<>(fail(ex.getErrorCode().getMessage()),ex.getErrorCode().getHttpStatus());
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiResponseDTO<?>> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException ex){
+        log.error("HttpRequestMethodNotSupportedException", ex);
+        return new ResponseEntity<>(fail("HttpRequestMethod Not Supported."),HttpStatus.BAD_REQUEST);
     }
 }

@@ -1,17 +1,19 @@
-package njb.recipe.entity;
+package njb.recipe.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import njb.recipe.entity.BaseTimeEntity;
+import njb.recipe.entity.JoinType;
+import njb.recipe.entity.RefreshToken;
 
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Member extends BaseTimeEntity{
+public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -76,6 +78,10 @@ public class Member extends BaseTimeEntity{
 
     public void updateFcmToken(String token) {
         this.fcmToken = token;
+    }
+
+    public void updatePassword(String password) {
+        this.password = password;
     }
 
 }

@@ -1,10 +1,10 @@
-package njb.recipe.dto.member;
+package njb.recipe.domain.member.dto;
 
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import njb.recipe.entity.Member;
+import njb.recipe.domain.member.entity.Member;
 
 @Data
 @AllArgsConstructor

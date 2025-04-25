@@ -1,17 +1,13 @@
 package njb.recipe.integration;
 
-import com.google.firebase.messaging.FirebaseMessaging;
-
 import njb.recipe.dto.token.FcmNotificationRequestDTO;
 import njb.recipe.entity.Ingredient;
-import njb.recipe.entity.Member;
+import njb.recipe.domain.member.entity.Member;
 import njb.recipe.repository.IngredientRepository;
 import njb.recipe.service.ExpirationNotificationService;
 import njb.recipe.service.FcmService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

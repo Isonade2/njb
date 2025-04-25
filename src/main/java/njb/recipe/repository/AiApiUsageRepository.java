@@ -1,7 +1,7 @@
 package njb.recipe.repository;
 
 import njb.recipe.entity.AiApiUsage;
-import njb.recipe.entity.Member;
+import njb.recipe.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
