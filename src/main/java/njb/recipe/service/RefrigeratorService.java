@@ -92,17 +92,30 @@ public class RefrigeratorService {
                 .build();
     }
 
-    // 냉장고 수정
+    @Transactional
     public boolean updateRefrigerator(Long id, RefrigeratorRequestDTO refrigeratorDTO, Long memberId) {
         Optional<Refrigerator> optionalRefrigerator = refrigeratorRepository.findById(id);
+
         if (optionalRefrigerator.isPresent() && optionalRefrigerator.get().getMember().getId().equals(memberId)) {
             Refrigerator refrigerator = optionalRefrigerator.get();
+
+            String oldPhotoUrl = refrigerator.getPhotoUrl();  // 기존 이미지 URL
+            String newPhotoUrl = refrigeratorDTO.getPhotoUrl();  // 새 이미지 URL
+
+            // 🔥 이미지가 수정되었을 때 (기존 이미지가 있고, 새 URL이 다를 때)
+            if (oldPhotoUrl != null && !oldPhotoUrl.isBlank() && !oldPhotoUrl.equals(newPhotoUrl)) {
+                s3Service.deleteFile(oldPhotoUrl);  // 기존 이미지 삭제
+            }
+
+            // 🔥 필드 업데이트
             refrigerator.setName(refrigeratorDTO.getName());
-            refrigerator.setPhotoUrl(refrigeratorDTO.getPhotoUrl());
+            refrigerator.setPhotoUrl(newPhotoUrl);  // 새 이미지 URL (새로 추가되거나, null일 수 있음)
             refrigerator.setDescription(refrigeratorDTO.getDescription());
+
             refrigeratorRepository.save(refrigerator);
             return true; // 수정 성공
         }
+
         return false; // 냉장고가 없거나 소유자가 다를 경우
     }
 
