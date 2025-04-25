@@ -26,7 +26,10 @@ public class IngredientService {
     private RefrigeratorRepository refrigeratorRepository;
 
     @Autowired
-    private CategoryRepository categoryRepository; 
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private S3Service s3Service;
 
     
     // 단일 재료 수정
@@ -79,8 +82,8 @@ public class IngredientService {
     }
 
     // 다중 재료 삭제
+    @Transactional
     public void deleteIngredients(List<Long> ingredientIds, String userId, Long refrigeratorId) {
-        // 모든 재료가 유효한지 확인
         for (Long id : ingredientIds) {
             Ingredient ingredient = ingredientRepository.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("해당 재료가 존재하지 않습니다."));
@@ -94,11 +97,17 @@ public class IngredientService {
             if (!ingredient.getRefrigerator().getId().equals(refrigeratorId)) {
                 throw new IllegalArgumentException("해당 냉장고에 속하지 않는 재료입니다.");
             }
+
+            // 🔥 1. S3 이미지 삭제 (사진이 있는 경우만)
+            if (ingredient.getPhotoUrl() != null) {
+                s3Service.deleteFile(ingredient.getPhotoUrl());
+            }
         }
 
-        // 모든 유효성 검사를 통과한 경우에만 삭제
+        // 🔥 2. 모든 재료 삭제
         ingredientRepository.deleteAllById(ingredientIds);
     }
+
 
     // 단일 재료 조회
     public IngredientResponseDTO getIngredientById(Long refrigeratorId, Long ingredientId, String userId) {

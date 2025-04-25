@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -33,6 +35,10 @@ public class Refrigerator {
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false) // 외래 키 컬럼 이름
     private Member member; // 이 냉장고의 소유자
+
+    @OneToMany(mappedBy = "refrigerator", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ingredient> ingredients = new ArrayList<>();
+
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

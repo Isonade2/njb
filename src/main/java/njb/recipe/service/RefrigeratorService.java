@@ -1,20 +1,19 @@
 package njb.recipe.service;
 
+import njb.recipe.entity.Ingredient;
+import njb.recipe.repository.IngredientRepository;
+import org.springframework.transaction.annotation.Transactional;
 import njb.recipe.dto.refri.RefrigeratorRequestDTO;
 import njb.recipe.dto.refri.RefrigeratorResponseDTO;
 import njb.recipe.entity.Category;
 import njb.recipe.entity.Member;
 import njb.recipe.entity.Refrigerator;
-import njb.recipe.global.jwt.CustomUserDetails;
 import njb.recipe.repository.CategoryRepository;
 import njb.recipe.repository.RefrigeratorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -28,6 +27,12 @@ public class RefrigeratorService {
 
     @Autowired
     private CategoryRepository categoryRepository;
+
+    @Autowired
+    private IngredientRepository ingredientRepository;
+
+    @Autowired
+    private S3Service s3Service;
 
      // 모든 카테고리 조회
      public List<Category> getAllCategories() {
@@ -102,12 +107,34 @@ public class RefrigeratorService {
     }
 
     // 냉장고 삭제
+    @Transactional
     public boolean deleteRefrigerator(Long id, Long memberId) {
         Optional<Refrigerator> optionalRefrigerator = refrigeratorRepository.findById(id);
+
         if (optionalRefrigerator.isPresent() && optionalRefrigerator.get().getMember().getId().equals(memberId)) {
+            Refrigerator refrigerator = optionalRefrigerator.get();
+
+            // 1. 재료 리스트 조회
+            List<Ingredient> ingredients = ingredientRepository.findByRefrigeratorId(refrigerator.getId());
+
+            // 2. 재료 이미지 삭제
+            for (Ingredient ingredient : ingredients) {
+                if (ingredient.getPhotoUrl() != null) {
+                    s3Service.deleteFile(ingredient.getPhotoUrl());
+                }
+            }
+
+            // 3. 냉장고 이미지 삭제 (있다면)
+            if (refrigerator.getPhotoUrl() != null) {
+                s3Service.deleteFile(refrigerator.getPhotoUrl());
+            }
+
+            // 4. 냉장고 삭제 (Cascade로 재료도 삭제)
             refrigeratorRepository.deleteById(id);
-            return true; // 삭제 성공
+            return true;
         }
-        return false; // 냉장고가 없거나 소유자가 다를 경우
+        return false;
     }
+
+
 }

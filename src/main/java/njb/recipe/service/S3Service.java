@@ -30,12 +30,11 @@ public class S3Service {
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucket)
                 .key(key)
-                .contentType("image/jpeg")
                 .build();
 
         PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(
                 r -> r.putObjectRequest(objectRequest)
-                        .signatureDuration(Duration.ofMinutes(5))
+                        .signatureDuration(Duration.ofMinutes(10))
         );
 
         String staticUrl = "https://" + bucket + ".s3." + Region.AP_NORTHEAST_2.id() + ".amazonaws.com/" + key;
