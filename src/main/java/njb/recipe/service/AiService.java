@@ -1,21 +1,18 @@
 package njb.recipe.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import njb.recipe.dto.ApiResponseDTO;
-import njb.recipe.dto.ResponseUtils;
 import njb.recipe.dto.refri.IngredientImageRecognitionDTO;
 import njb.recipe.entity.AiApiUsage;
-import njb.recipe.entity.Member;
+import njb.recipe.domain.member.entity.Member;
 import njb.recipe.handler.exception.AiResponseError;
 import njb.recipe.handler.exception.ApiUsageExceedException;
 import njb.recipe.handler.exception.UserIdNotFountException;
 import njb.recipe.repository.AiApiUsageRepository;
-import njb.recipe.repository.MemberRepository;
+import njb.recipe.domain.member.repository.MemberRepository;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;

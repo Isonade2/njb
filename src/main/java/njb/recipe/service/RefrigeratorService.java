@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import njb.recipe.dto.refri.RefrigeratorRequestDTO;
 import njb.recipe.dto.refri.RefrigeratorResponseDTO;
 import njb.recipe.entity.Category;
-import njb.recipe.entity.Member;
+import njb.recipe.domain.member.entity.Member;
 import njb.recipe.entity.Refrigerator;
 import njb.recipe.repository.CategoryRepository;
 import njb.recipe.repository.RefrigeratorRepository;

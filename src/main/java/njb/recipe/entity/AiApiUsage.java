@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import njb.recipe.domain.member.entity.Member;
 
 import java.time.LocalDate;
 

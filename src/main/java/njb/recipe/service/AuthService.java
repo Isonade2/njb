@@ -1,21 +1,21 @@
 package njb.recipe.service;
 
 import lombok.RequiredArgsConstructor;
-import njb.recipe.dto.member.MemberRequestDTO;
-import njb.recipe.dto.member.MemberResponseDTO;
-import njb.recipe.dto.member.SignupRequestDTO;
+import njb.recipe.domain.member.dto.MemberRequestDTO;
+import njb.recipe.domain.member.dto.MemberResponseDTO;
+import njb.recipe.domain.member.dto.SignupRequestDTO;
+import njb.recipe.domain.member.service.EmailService;
 import njb.recipe.dto.token.TokenResponseDTO;
 import njb.recipe.dto.token.TokenRequestDTO;
 import njb.recipe.entity.ActivationToken;
 import njb.recipe.entity.JoinType;
-import njb.recipe.entity.Member;
+import njb.recipe.domain.member.entity.Member;
 import njb.recipe.global.jwt.TokenProvider;
 import njb.recipe.handler.exception.DuplicateEmailException;
 import njb.recipe.repository.ActivationTokenRepository;
-import njb.recipe.repository.MemberRepository;
+import njb.recipe.domain.member.repository.MemberRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

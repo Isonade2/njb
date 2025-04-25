@@ -1,4 +1,4 @@
-package njb.recipe.dto.member;
+package njb.recipe.domain.member.dto;
 
 
 import lombok.AllArgsConstructor;

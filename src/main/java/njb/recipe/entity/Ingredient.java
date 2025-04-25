@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import njb.recipe.domain.member.entity.Member;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;

@@ -1,7 +1,7 @@
-package njb.recipe.repository;
+package njb.recipe.domain.member.repository;
 
 
-import njb.recipe.entity.Member;
+import njb.recipe.domain.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

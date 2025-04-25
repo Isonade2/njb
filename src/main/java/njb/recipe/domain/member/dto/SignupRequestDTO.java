@@ -1,4 +1,4 @@
-package njb.recipe.dto.member;
+package njb.recipe.domain.member.dto;
 
 
 import jakarta.validation.constraints.Email;
@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import njb.recipe.entity.JoinType;
-import njb.recipe.entity.Member;
+import njb.recipe.domain.member.entity.Member;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Data

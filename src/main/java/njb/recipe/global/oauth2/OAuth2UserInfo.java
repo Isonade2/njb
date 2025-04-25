@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import njb.recipe.entity.JoinType;
-import njb.recipe.entity.Member;
+import njb.recipe.domain.member.entity.Member;
 
 import java.util.Map;
 

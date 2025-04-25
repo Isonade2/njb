@@ -1,8 +1,8 @@
 package njb.recipe.global.jwt;
 
 import lombok.RequiredArgsConstructor;
-import njb.recipe.entity.Member;
-import njb.recipe.repository.MemberRepository;
+import njb.recipe.domain.member.entity.Member;
+import njb.recipe.domain.member.repository.MemberRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
