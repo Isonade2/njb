@@ -33,53 +33,67 @@ public class IngredientService {
 
     
     // 단일 재료 수정
+    @Transactional
     public IngredientResponseDTO updateIngredient(Long refrigeratorId, Long ingredientId, IngredientRequestDTO ingredientRequestDTO, String userId) {
+        // 1. 냉장고 존재 여부 확인
         Refrigerator refrigerator = refrigeratorRepository.findById(refrigeratorId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 냉장고가 존재하지 않습니다."));
 
-        // 소유자 확인
+        // 2. 냉장고 소유자 확인
         if (!refrigerator.getMember().getId().toString().equals(userId)) {
             throw new IllegalArgumentException("이 냉장고에 접근할 권한이 없습니다.");
         }
 
+        // 3. 재료 존재 여부 확인
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 재료가 존재하지 않습니다."));
 
-        // 재료의 냉장고 ID가 입력받은 냉장고 ID와 일치하는지 확인
+        // 4. 재료의 냉장고 ID 일치 여부 확인
         if (!ingredient.getRefrigerator().getId().equals(refrigeratorId)) {
             throw new IllegalArgumentException("이 재료는 해당 냉장고에 속하지 않습니다.");
         }
 
-        // 소유자 확인
+        // 5. 재료 소유자 확인
         if (!ingredient.getMember().getId().toString().equals(userId)) {
             throw new IllegalArgumentException("이 재료를 수정할 권한이 없습니다.");
         }
 
-        // 카테고리 조회
+        // 6. 카테고리 존재 여부 확인
         Category category = categoryRepository.findById(ingredientRequestDTO.getCategoryId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 카테고리가 존재하지 않습니다."));
 
-        // 재료 수정
+        // 7. 🔥 기존 이미지 삭제 로직 (빈 문자열 방어 추가)
+        String oldPhotoUrl = ingredient.getPhotoUrl();
+        String newPhotoUrl = ingredientRequestDTO.getPhotoUrl();
+
+        if (oldPhotoUrl != null && !oldPhotoUrl.isBlank() && !oldPhotoUrl.equals(newPhotoUrl)) {
+            s3Service.deleteFile(oldPhotoUrl);  // 기존 이미지 삭제
+        }
+
+        // 8. 재료 정보 수정
         ingredient.setName(ingredientRequestDTO.getName());
-        ingredient.setPhotoUrl(ingredientRequestDTO.getPhotoUrl());
+        ingredient.setPhotoUrl(newPhotoUrl);  // 새 이미지 URL (null일 수도 있음)
         ingredient.setQuantity(ingredientRequestDTO.getQuantity());
-        ingredient.setCategory(category); 
+        ingredient.setCategory(category);
         ingredient.setExpirationDate(ingredientRequestDTO.getExpirationDate());
 
         Ingredient updatedIngredient = ingredientRepository.save(ingredient);
 
+        // 9. DTO 반환
         return IngredientResponseDTO.builder()
                 .id(updatedIngredient.getId())
                 .refrigeratorId(updatedIngredient.getRefrigerator().getId())
                 .name(updatedIngredient.getName())
                 .photoUrl(updatedIngredient.getPhotoUrl())
                 .quantity(updatedIngredient.getQuantity())
-                .category(updatedIngredient.getCategory().getName()) // 카테고리 이름 반환
-                .categoryId(updatedIngredient.getCategory().getId()) // 카테고리 ID 반환
+                .category(updatedIngredient.getCategory().getName())
+                .categoryId(updatedIngredient.getCategory().getId())
                 .registrationDate(updatedIngredient.getRegistrationDate())
                 .expirationDate(updatedIngredient.getExpirationDate())
                 .build();
     }
+
+
 
     // 다중 재료 삭제
     @Transactional
