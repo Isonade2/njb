@@ -1,9 +1,8 @@
-package njb.recipe.dto;
+package njb.recipe.domain.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 
 @Data
 @AllArgsConstructor

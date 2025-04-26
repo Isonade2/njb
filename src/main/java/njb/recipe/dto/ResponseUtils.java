@@ -1,5 +1,7 @@
 package njb.recipe.dto;
 
+import njb.recipe.domain.member.dto.ApiResponseDTO;
+
 public class ResponseUtils {
 
     public static <T> ApiResponseDTO<T> success(T data, String message){

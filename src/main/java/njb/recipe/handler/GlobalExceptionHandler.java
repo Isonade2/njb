@@ -1,10 +1,9 @@
 package njb.recipe.handler;
 
 
-import ch.qos.logback.core.spi.ErrorCodes;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import njb.recipe.dto.ApiResponseDTO;
+import njb.recipe.domain.member.dto.ApiResponseDTO;
 import njb.recipe.handler.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

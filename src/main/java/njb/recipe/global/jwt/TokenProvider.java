@@ -10,7 +10,7 @@ import njb.recipe.dto.token.TokenResponseDTO;
 import njb.recipe.domain.member.entity.Member;
 import njb.recipe.entity.RefreshToken;
 import njb.recipe.domain.member.repository.MemberRepository;
-import njb.recipe.repository.RefreshTokenRepository;
+import njb.recipe.domain.member.repository.RefreshTokenRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

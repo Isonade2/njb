@@ -1,14 +1,13 @@
-package njb.recipe.controller;
+package njb.recipe.domain.ai;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import njb.recipe.dto.ApiResponseDTO;
+import njb.recipe.domain.member.dto.ApiResponseDTO;
 import njb.recipe.dto.ResponseUtils;
 import njb.recipe.dto.refri.IngredientImageRecognitionDTO;
 import njb.recipe.global.jwt.CustomUserDetails;
-import njb.recipe.service.AiService;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

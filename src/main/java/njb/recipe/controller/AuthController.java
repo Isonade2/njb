@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import njb.recipe.dto.ApiResponseDTO;
+import njb.recipe.domain.member.dto.ApiResponseDTO;
 import njb.recipe.dto.ResponseUtils;
 import njb.recipe.domain.member.dto.MemberRequestDTO;
 import njb.recipe.domain.member.dto.MemberResponseDTO;
