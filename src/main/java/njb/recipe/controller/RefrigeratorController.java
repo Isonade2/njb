@@ -3,7 +3,7 @@ package njb.recipe.controller;
 import njb.recipe.dto.refri.RefrigeratorRequestDTO;
 import njb.recipe.dto.refri.RefrigeratorResponseDTO;
 import njb.recipe.entity.Category;
-import njb.recipe.dto.ApiResponseDTO;
+import njb.recipe.domain.member.dto.ApiResponseDTO;
 import njb.recipe.dto.ResponseUtils;
 import njb.recipe.global.jwt.CustomUserDetails;
 import njb.recipe.service.RefrigeratorService;

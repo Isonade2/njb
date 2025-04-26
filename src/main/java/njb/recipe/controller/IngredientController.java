@@ -2,7 +2,7 @@ package njb.recipe.controller;
 
 import njb.recipe.dto.refri.IngredientRequestDTO;
 import njb.recipe.dto.refri.IngredientResponseDTO;
-import njb.recipe.dto.ApiResponseDTO;
+import njb.recipe.domain.member.dto.ApiResponseDTO;
 import njb.recipe.dto.ResponseUtils;
 import njb.recipe.service.IngredientService;
 import njb.recipe.global.jwt.CustomUserDetails;

@@ -1,11 +1,11 @@
-package njb.recipe.entity;
+package njb.recipe.domain.member.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import njb.recipe.domain.member.entity.Member;
+import njb.recipe.entity.BaseTimeEntity;
 
 import java.time.LocalDate;
 

@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import njb.recipe.domain.member.dto.PasswordUpdateRequest;
 import njb.recipe.domain.member.dto.PasswordfindRequest;
-import njb.recipe.dto.ApiResponseDTO;
+import njb.recipe.domain.member.dto.ApiResponseDTO;
 import njb.recipe.dto.ResponseUtils;
 import njb.recipe.domain.member.dto.UserInfoResponseDTO;
 import njb.recipe.global.jwt.CustomUserDetails;

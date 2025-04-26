@@ -1,4 +1,4 @@
-package njb.recipe.repository;
+package njb.recipe.domain.member.repository;
 
 import njb.recipe.entity.ActivationToken;
 import org.springframework.data.jpa.repository.JpaRepository;

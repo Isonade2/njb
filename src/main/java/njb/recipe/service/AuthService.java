@@ -12,7 +12,7 @@ import njb.recipe.entity.JoinType;
 import njb.recipe.domain.member.entity.Member;
 import njb.recipe.global.jwt.TokenProvider;
 import njb.recipe.handler.exception.DuplicateEmailException;
-import njb.recipe.repository.ActivationTokenRepository;
+import njb.recipe.domain.member.repository.ActivationTokenRepository;
 import njb.recipe.domain.member.repository.MemberRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
