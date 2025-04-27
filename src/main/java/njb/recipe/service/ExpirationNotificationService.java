@@ -26,7 +26,7 @@ public class ExpirationNotificationService {
         this.ingredientRepository = ingredientRepository;
     }
 
-    @Scheduled(cron = "0 0 16 * * ?") // 매일 오전 9시에 실행
+    @Scheduled(cron = "0 30 16 * * ?") // 매일 오전 9시에 실행
     public void sendExpirationNotifications() {
         LocalDate thresholdDate = LocalDate.now().plusDays(3); // 3일 이내로 남은 재료 조회
         List<Ingredient> expiringIngredients = ingredientRepository.findExpiringIngredients(thresholdDate);
