@@ -1,12 +1,15 @@
 package njb.recipe.controller;
 
 import lombok.RequiredArgsConstructor;
+import njb.recipe.domain.member.dto.ApiResponseDTO;
 import njb.recipe.dto.token.PresignedResponseDTO;
 import njb.recipe.global.jwt.CustomUserDetails;
 import njb.recipe.service.S3Service;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import static njb.recipe.dto.ResponseUtils.success;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,14 +23,14 @@ public class S3Controller {
      * 프론트에서 파일 업로드 전에 요청
      */
     @GetMapping("/presigned-upload")
-    public ResponseEntity<PresignedResponseDTO> getPresignedUploadUrl(
+    public ResponseEntity<ApiResponseDTO<PresignedResponseDTO>> getPresignedUploadUrl(
             @AuthenticationPrincipal CustomUserDetails userDetails,  // 인증된 사용자 정보 (확인용)
             @RequestParam String folder,
             @RequestParam String fileName
     ) {
         // 서비스에서 Presigned URL + Path 생성
         PresignedResponseDTO response = s3Service.generateUploadPresignedUrl(folder, fileName);
-        return ResponseEntity.ok(response);  // JSON 형식으로 응답
+        return ResponseEntity.ok(success(response, "Presigned URL 발급 성공"));  // JSON 형식으로 응답
     }
 
 
@@ -36,12 +39,12 @@ public class S3Controller {
      * 프론트에서 비공개 이미지 조회 시 요청
      */
     @GetMapping("/presigned-view")
-    public ResponseEntity<String> getPresignedViewUrl(
+    public ResponseEntity<ApiResponseDTO<String>> getPresignedViewUrl(
         @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam String key // 예: ingredient/uuid-filename.jpg
     ) {
         String viewUrl = s3Service.generateViewPresignedUrl(key);
-        return ResponseEntity.ok(viewUrl);
+        return ResponseEntity.ok(success(viewUrl, "Presigned URL 발급 성공"));
     }
 
     /**
