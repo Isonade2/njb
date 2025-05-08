@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagementConfigurer -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-        //http.cors(Customizer.withDefaults());
+        http.cors(Customizer.withDefaults());
 
         http.addFilterBefore(new JwtFilter(tokenProvider), UsernamePasswordAuthenticationFilter.class);
 
@@ -87,26 +87,26 @@ public class SecurityConfig {
         return http.build();
     }
 
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//
-//        // 특정 도메인만 허용 (CORS 오류 방지)
-//        configuration.setAllowedOrigins(List.of("http://local.recipic.shop:3000", domain));
-//
-//        // 허용할 HTTP 메소드 설정
-//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//
-//        // 허용할 헤더 설정
-//        configuration.setAllowedHeaders(List.of("*"));
-//
-//        // 자격 증명(쿠키, Authorization 헤더 등) 허용
-//        configuration.setAllowCredentials(true);
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
+   @Bean
+   public CorsConfigurationSource corsConfigurationSource() {
+       CorsConfiguration configuration = new CorsConfiguration();
+
+       // 특정 도메인만 허용 (CORS 오류 방지)
+       configuration.setAllowedOrigins(List.of("http://local.recipic.shop:3000", domain));
+
+       // 허용할 HTTP 메소드 설정
+       configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+       // 허용할 헤더 설정
+       configuration.setAllowedHeaders(List.of("*"));
+
+       // 자격 증명(쿠키, Authorization 헤더 등) 허용
+       configuration.setAllowCredentials(true);
+
+       UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+       source.registerCorsConfiguration("/**", configuration);
+       return source;
+   }
 
     @Bean
     public PasswordEncoder passwordEncoder(){
