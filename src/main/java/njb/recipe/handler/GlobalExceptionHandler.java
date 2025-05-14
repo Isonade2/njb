@@ -126,4 +126,13 @@ public class GlobalExceptionHandler {
         log.error("HttpRequestMethodNotSupportedException", ex);
         return new ResponseEntity<>(fail("HttpRequestMethod Not Supported."),HttpStatus.BAD_REQUEST);
     }
+
+    // RuntimeException : 잘못된 매개변수 전달 시 예외
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponseDTO<?>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        log.error("IllegalArgumentException", ex);
+        return new ResponseEntity<>(fail("잘못된 요청입니다: " + ex.getMessage()), HttpStatus.BAD_REQUEST);
+    }
+
+
 }

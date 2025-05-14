@@ -20,4 +20,7 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
     // 유통기한 임박 재료 조회 쿼리
     @Query("SELECT i FROM Ingredient i WHERE i.expirationDate <= :thresholdDate")
     List<Ingredient> findExpiringIngredients(LocalDate thresholdDate);
+
+    List<Ingredient> findByMemberIdAndPhotoUrlIsNotNull(Long memberId);
+
 }
