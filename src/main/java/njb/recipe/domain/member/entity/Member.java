@@ -3,9 +3,11 @@ package njb.recipe.domain.member.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import njb.recipe.entity.BaseTimeEntity;
+import njb.recipe.entity.FcmToken;
 import njb.recipe.entity.JoinType;
 import njb.recipe.entity.RefreshToken;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -73,15 +75,28 @@ public class Member extends BaseTimeEntity {
     }
 
     // fcm 토큰 
-    @Column(name = "fcm_token", length = 255)
-    private String fcmToken;
+    // @Column(name = "fcm_token", length = 255)
+    // private String fcmToken;
 
-    public void updateFcmToken(String token) {
-        this.fcmToken = token;
-    }
+    // public void updateFcmToken(String token) {
+    //     this.fcmToken = token;
+    // }
 
     public void updatePassword(String password) {
         this.password = password;
+    }
+
+    // fcm 토큰 리스트
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FcmToken> fcmTokens = new ArrayList<>();
+
+    public void addFcmToken(FcmToken token) {
+        this.fcmTokens.add(token);
+    }
+
+    public void removeFcmToken(FcmToken token) {
+        this.fcmTokens.remove(token);
     }
 
 }
